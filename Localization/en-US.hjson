@@ -1,0 +1,69 @@
+
+Mods: {
+	vermage: {
+		DamageClassName: {
+			VermilionDamageClass: Vermilion Damage
+		}
+		Tooltips: {
+			RightClick: 
+			'''
+			Right-Click to switch stances.
+			'''
+			MeleeStance: 
+			'''
+			[c/A334A3:~~Dueling Stance~~]
+			'''
+			MageStance: 
+			'''
+			[c/A334A3:~~Blasting Stance~~]
+			'''
+			Inheritance: 
+			'''
+			Inherits from [c/EF4DFF:Magic] and [c/FCEE72:Radiant] Damage.
+			'''
+			ActionKey: 
+			'''
+			Press <[c/A334A3:{0}]> to activate.
+			'''
+			ManaCost: 
+			'''
+			Costs [c/A334A3:{0}] Black and White Mana to activate.
+			'''
+			Regen: 
+			'''
+			Restores ([c/FCEE72:{0}]) health to you and all nearby allies over {1} seconds.
+			'''
+		}
+		CombatTexts: {
+			MageStance: Blasting Stance!
+			MeleeStance: Dueling Stance!
+		}
+		ItemName: {
+			ApprenticeRapier: Apprentice's Rapier
+			HellstoneRapier: Brimstone
+			IceFocus: Ice Focus
+			HealingFocus: Healing Focus
+		}
+		ItemTooltip: {
+			HealingFocus: A focus which pulses with vitality.
+			IceFocus: 
+			'''
+			A cold-aspected spellcasting Focus.
+			Inflicts Chilled to all nearby enemies.
+			'''
+			ApprenticeRapier: 
+			'''
+			An apprentice's rapier.
+			Fires basic [c/EF4DFF:Sparks] when used as a magical weapon.
+			'''
+			HellstoneRapier: 
+			'''
+			Inflicts [c/FFC000:On Fire!] on hit.
+			Casts a slow-moving [c/FFC000:Explosive] bolt.
+			'''
+		}
+		ProjectileName: {
+			ApprenticeRapierProjectile: Apprentice's Rapier
+		}
+	}
+}

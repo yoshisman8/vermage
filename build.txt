@@ -1,0 +1,4 @@
+displayName = Project Red Mage
+author = Vyklade
+version = 0.1
+sortAfter = ThoriumMod
