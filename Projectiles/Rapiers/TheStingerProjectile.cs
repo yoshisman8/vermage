@@ -14,6 +14,7 @@ using System.Security.Policy;
 using static Terraria.ModLoader.PlayerDrawLayer;
 using Steamworks;
 using System.Drawing;
+using vermage.Projectiles.Guards;
 
 namespace vermage.Projectiles.Rapiers
 {
@@ -23,6 +24,10 @@ namespace vermage.Projectiles.Rapiers
         {
             base.SetDefaults();
             Projectile.Size = new Vector2(50);
+            GuardType = ModContent.ProjectileType<TheStingerGuardProjectile>();
         }
+
     }
+
+    
 }

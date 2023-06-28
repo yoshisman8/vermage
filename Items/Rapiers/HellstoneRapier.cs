@@ -18,6 +18,7 @@ using System.Security.Policy;
 using vermage.Projectiles.Swings;
 using vermage.Projectiles.Swings.HellstoneRapier;
 using vermage.Projectiles.Spells;
+using vermage.Systems;
 
 namespace vermage.Items.Rapiers
 {
@@ -35,29 +36,31 @@ namespace vermage.Items.Rapiers
             Item.autoReuse = true;
 
             Item.shoot = ProjectileType<HellstoneRapierProjectile>();
-            Item.shootSpeed = 20f;
 
-            Item.damage = 24;
-            Item.knockBack = 4f;
             Item.crit = 7;
-            
-            MeleeUseTime = 70;
 
-            MageShoot = ProjectileType<JoltProjectile>();
-            MageShootSpeed = 7f;
-            MageKnockback = 5f;
-            MageDamage = 6;
-            MageUseTime = 15;
-            CastTime = (int)(60f * 1.5f);
-
-            Item.mana = 2;
-            ComboSteps = 2;
-            SlashProjectile = ProjectileType<HellstoneSlashProjectile>();
-            JabProjectile = ProjectileType<HellstoneJabProjectile>();
+            Item.mana = 15;
 
             base.SetDefaults();
         }
 
+        public override DuelData GetDuelData()
+        {
+            return new DuelData()
+                .SetDamage(24)
+                .SetKnockback(4f)
+                .SetUseTime(64)
+                .SetFirstAttack(ProjectileType<HellstoneSlashProjectile>())
+                .SetSecondAttack(ProjectileType<HellstoneJabProjectile>());
+        }
+        public override SpellData GetSpellData()
+        {
+            return SpellData.Jolt()
+                .SetDamage(1.83f)
+                .SetCastTime((int)(60f * 1.8f))
+                .SetKnockback(7f)
+                .SetProjectileSpeed(7f);
+        }
         public override void AddRecipes()
         {
             CreateRecipe()

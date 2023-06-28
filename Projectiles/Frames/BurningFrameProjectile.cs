@@ -1,13 +1,12 @@
-﻿using IL.Terraria.Audio;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vermage.Systems
+namespace vermage.Projectiles.Frames
 {
-    public static class Sounds
+    public class BurningFrameProjectile : BaseFrameProjectile
     {
         
     }

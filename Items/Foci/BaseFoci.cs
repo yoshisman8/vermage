@@ -17,11 +17,8 @@ namespace vermage.Items.Foci
 
     public abstract class BaseFoci : ModItem
     {
-
-        public (int, int, int) Info => (Type, Item.buffType, Item.shoot);
-
         /// <summary>
-        /// How much Black and White mana is needed to activate this item.
+        /// How much Red mana is needed to activate this item.
         /// </summary>
         public int ActivationCost = 0;
 
@@ -30,7 +27,10 @@ namespace vermage.Items.Foci
         /// </summary>
         public int ActiveDuration = 0;
 
-        public int CastingTime = 0;
+        public abstract void OnHitNPC(Projectile projectile, int damage, NPC target);
+        public abstract void OnHitPlayer(Projectile projectile, int damage, Player player);
+        public abstract void OnCast(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int damage, float knockback);
+
         public override void SetDefaults()
         {
             Item.accessory = false;
@@ -82,6 +82,7 @@ namespace vermage.Items.Foci
                 }
             }
         }
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Toggle(player);

@@ -72,7 +72,7 @@ namespace vermage.Projectiles.Foci
             {
                 UpdateHeld(player);
             }
-            vPlayer.FocusPos = Projectile.Center;
+            vPlayer.FocusPos = new Vector2(Projectile.Center.X, Projectile.Center.Y + DrawOriginOffsetY);
         }
         private void UpdateHeld(Player player)
         {
@@ -179,9 +179,6 @@ namespace vermage.Projectiles.Foci
             Projectile.Center = (PivotCenter + direction * Projectile.Size.X * 0.20f).RotatedBy(MathHelper.ToRadians(-35f * Projectile.direction), playerCenter);
 
             Projectile.rotation = direction.ToRotation() + MathHelper.ToRadians(45f) * Projectile.spriteDirection + (Projectile.direction == -1? MathHelper.ToRadians(180f) : 0);
-
-            
-
         }
         public override void Kill(int timeLeft)
         {

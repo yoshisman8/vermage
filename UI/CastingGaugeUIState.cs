@@ -24,6 +24,8 @@ namespace vermage.UI
 
         private CastingGaugeContainer Container;
         private UIImage CastingGauge;
+        private SpellIcon SpellIcon;
+        private SpellName SpellName;
         private CastingBar Bar;
         private CastingTimer Timer;
 
@@ -59,6 +61,18 @@ namespace vermage.UI
             Timer.Top.Set(32f, 0f);
 
             Container.Append(Timer);
+
+            SpellName = new("JOLT");
+            SpellName.Left.Set(6f, 0f);
+            SpellName.Top.Set(3f, 0f);
+
+            Container.Append(SpellName);
+
+            SpellIcon = new("vermage/Assets/Spells/Jolt");
+            SpellIcon.Left.Set(-48f, 0f);
+            SpellIcon.Top.Set(1f, 0f);
+
+            Container.Append(SpellIcon);
 
             Append(Container);
         }

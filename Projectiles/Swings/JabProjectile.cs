@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using IL.Terraria.GameContent.Bestiary;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,7 @@ namespace vermage.Projectiles.Swings
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
+            Projectile.scale = 1.3f;
         }
         public override void OnSpawn(IEntitySource source)
         {
@@ -126,9 +128,24 @@ namespace vermage.Projectiles.Swings
         public override bool ShouldUpdatePosition() => false;
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
+            base.OnHitNPC(target, damage, knockback, crit);
+
             if(damage > 0)
             {
-                Player.GetModPlayer<VerPlayer>().BlackMana += Player.GetModPlayer<VerPlayer>().BaseManaGain;
+                Player.GetModPlayer<VerPlayer>().AddMana(ManaColor.Black, 0.02f);
+
+                Player.GetModPlayer<VerPlayer>().FocusOnHitNPC?.Invoke(Projectile, damage, target);
+            }
+        }
+        public override void OnHitPvp(Player target, int damage, bool crit)
+        {
+            base.OnHitPvp(target, damage, crit);
+
+            if (damage > 0)
+            {
+                Player.GetModPlayer<VerPlayer>().AddMana(ManaColor.Black, 0.02f);
+
+                Player.GetModPlayer<VerPlayer>().FocusOnHitPlayer?.Invoke(Projectile, damage, target);
             }
         }
     }

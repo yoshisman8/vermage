@@ -27,6 +27,7 @@ namespace vermage.Projectiles.Swings
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
+            Projectile.scale = 1.2f;
         }
         public override void OnSpawn(IEntitySource source)
         {
@@ -97,16 +98,26 @@ namespace vermage.Projectiles.Swings
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
+            base.OnHitNPC(target, damage, knockback, crit);
+
             if (damage > 0)
             {
-                Player.GetModPlayer<VerPlayer>().BlackMana += Player.GetModPlayer<VerPlayer>().BaseManaGain;
+                Player.GetModPlayer<VerPlayer>().AddMana(ManaColor.Black, 0.05f);
+
+                Player.GetModPlayer<VerPlayer>().FocusOnHitNPC?.Invoke(Projectile, damage, target);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
+        public override void OnHitPvp(Player target, int damage, bool crit)
         {
-            default(WhiteTrail).Draw(Projectile);
+            base.OnHitPvp(target, damage, crit);
 
-            return true;
+            if (damage > 0)
+            {
+                Player.GetModPlayer<VerPlayer>().AddMana(ManaColor.Black, 0.05f);
+
+                Player.GetModPlayer<VerPlayer>().FocusOnHitPlayer?.Invoke(Projectile, damage, target);
+            }
         }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using IL.Terraria.Net;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Bson;
 using ReLogic.Utilities;
 using Steamworks;
@@ -10,9 +11,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent.UI;
 using Terraria.GameInput;
 using Terraria.ModLoader;
+using vermage.Buffs;
 using vermage.Items.Foci;
 using vermage.Items.Rapiers;
 
@@ -24,8 +27,11 @@ namespace vermage.Systems
         public float WhiteMana = 0;
 
         public float BaseManaGain = 0.25f;
+        public float CastingTimeMultiplier = 1f;
+        public float CastingCostDiscount = 1f;
 
         private DateTime? LastManaGain;
+        public DateTime? LastMeleeSwing;
 
         public int MaxMana = 3;
 
@@ -36,16 +42,27 @@ namespace vermage.Systems
 
         public bool IsMageStance = false;
         public bool IsCasting = false;
+        public SpellData? ActiveSpell;
 
         public int? Focus = null;
         public int? Rapier = null;
+        public int? Frame = null;
 
         public Vector2? FocusPos;
+        public (int Type, Vector2 Center, float Rotation, int DrawOffsetX, float DrawOriginOffsetX, int DrawOriginOffsetY)? RapierPos;
 
         public static ModKeybind ActionKey;
         public static ModKeybind QuickFociToggle;
 
         private SlotId? CastingSlot;
+
+        public Action<Projectile, int, NPC> FrameOnHitNPC;
+        public Action<Projectile, int, Player> FrameOnHitPlayer;
+        public Action<Player, EntitySource_ItemUse_WithAmmo, Vector2, Vector2, int, float> FrameOnCast;
+
+        public Action<Projectile, int, NPC> FocusOnHitNPC;
+        public Action<Projectile, int, Player> FocusOnHitPlayer;
+        public Action<Player, EntitySource_ItemUse_WithAmmo,Vector2,Vector2,int,float> FocusOnCast;
 
         public int GetCombinedMana()
         {
@@ -107,7 +124,7 @@ namespace vermage.Systems
                     if (Rapier.HasValue)
                     {
                         BaseRapier r = ModContent.GetModItem(Rapier.Value) as BaseRapier;
-                        var frames = r.CastTime;
+                        var frames = r.GetSpellData().CastTime;
 
                         if (frames > 0)
                         {
@@ -116,7 +133,8 @@ namespace vermage.Systems
                                 result.Stop();
                             }
                             CastingSlot = SoundEngine.PlaySound(new SoundStyle("vermage/Assets/Sounds/Latch"), Player.position);
-                            CastFrames = (frames, frames);
+                            int time = Math.Max(20, (int)(frames * CastingTimeMultiplier));
+                            CastFrames = (time, time);
                             IsCasting = true;
                         }
                     }
@@ -204,6 +222,19 @@ namespace vermage.Systems
                 f.Toggle(Player);
             }
         }
+        public BaseFoci GetCurrentFocus()
+        {
+            if (!Focus.HasValue) return null;
+
+            for (int i = Main.InventoryItemSlotsStart; i < 9; i++)
+            {
+                if (Player.inventory[i].ModItem is BaseFoci foci)
+                {
+                    if (foci.Type == Focus.Value) return foci;
+                }
+            }
+            return null;
+        }
         public void AddMana(ManaColor Type, float amount)
         {
             if (FociFramesLeft > 0) return;
@@ -221,13 +252,24 @@ namespace vermage.Systems
             }
             LastManaGain = DateTime.Now;
         }
-        public void HandleManaDecline()
+        private void HandleManaDecline()
         {
             if (LastManaGain.HasValue)
             {
                 if((DateTime.Now - LastManaGain.Value).Seconds >= 5)
                 {
-                    AddMana(ManaColor.Both, 0.01f);
+                    AddMana(ManaColor.Red, -0.01f);
+                }
+            }
+        }
+        private void HandleComboReset()
+        {
+            if (LastMeleeSwing.HasValue)
+            {
+                if ((DateTime.Now - LastMeleeSwing.Value).Seconds > 3)
+                {
+                    ComboState = 0;
+                    LastMeleeSwing = null;
                 }
             }
         }
@@ -240,16 +282,44 @@ namespace vermage.Systems
             if (FociFramesLeft < 0) FociFramesLeft = 0;
 
             HandleManaDecline();
+
+            HandleComboReset();
         }
         public override void ResetEffects()
         {
+            if (!IsMageStance || !Rapier.HasValue)
+            {
+                ActiveSpell = null;
+            }
+
+            if (!Rapier.HasValue)
+            {
+                RapierPos = null;
+            }
+
             Rapier = null;
+            
             if (!Focus.HasValue)
             {
                 FocusPos = null;
             }
+
+            Focus = null;
+
+            Frame = null;
+            
             MaxMana = 3;
             BaseManaGain = 0.25f;
+            CastingCostDiscount = 1f;
+            CastingTimeMultiplier = 1f;
+
+            FrameOnCast = null;
+            FrameOnHitNPC = null;
+            FrameOnHitPlayer = null;
+
+            FocusOnCast = null;
+            FocusOnHitNPC = null;
+            FocusOnHitPlayer = null;
         }
     }
 
@@ -257,6 +327,6 @@ namespace vermage.Systems
     {
         Black = 0,
         White = 1,
-        Both = 2
+        Red = 2
     }
 }

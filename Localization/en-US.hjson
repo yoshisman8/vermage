@@ -11,59 +11,92 @@ Mods: {
 			'''
 			MeleeStance: 
 			'''
-			[c/A334A3:~~Dueling Stance~~]
+			[c/C61313:~~Dueling Stance~~]
 			'''
 			MageStance: 
 			'''
-			[c/A334A3:~~Blasting Stance~~]
+			[c/C61313:~~Casting Stance~~]
 			'''
 			Inheritance: 
 			'''
-			Inherits from [c/EF4DFF:Magic] and [c/FCEE72:Radiant] Damage.
+			Inherits from [c/C4700F:Melee] and [c/C1197B:Magic] Damage.
+			'''
+			InheritanceThorium: 
+			'''
+			Inherits from [c/C4700F:Melee], [c/C1197B:Magic] and [c/FCEE72:Radiant] Damage.
 			'''
 			ActionKey: 
 			'''
-			Press <[c/A334A3:{0}]> to activate.
+			Press <[c/C61313:{0}]> to activate.
 			'''
 			ManaCost: 
 			'''
-			Costs [c/A334A3:{0}] Black and White Mana to activate.
+			Costs [c/C61313:{0} Red Mana] to activate.
 			'''
-			Regen: 
-			'''
-			Restores ([c/FCEE72:{0}]) health to you and all nearby allies over {1} seconds.
-			'''
+			
 		}
 		CombatTexts: {
-			MageStance: Blasting Stance!
+			MageStance: Casting Stance!
 			MeleeStance: Dueling Stance!
 		}
 		ItemName: {
-			ApprenticeRapier: Apprentice's Rapier
 			HellstoneRapier: Brimstone
-			IceFocus: Ice Focus
-			HealingFocus: Healing Focus
+			TheStinger: The Stinger
+			HealingFocus: Mendicant's Focus
+			ResourceFocus: Magi's Focus
+			BurningFrame: Burning Frame
+			FrigidFrame: Frigid Frame
 		}
 		ItemTooltip: {
 			HealingFocus: A focus which pulses with vitality.
-			IceFocus: 
+			HealingFocusPassive: 
 			'''
-			A cold-aspected spellcasting Focus.
-			Inflicts Chilled to all nearby enemies.
+			Your spells restore [c/FCEE72:{0}] health to yourself and allies on hit.
 			'''
-			ApprenticeRapier: 
+			HealingFocusActive: 
 			'''
-			An apprentice's rapier.
-			Fires basic [c/EF4DFF:Sparks] when used as a magical weapon.
+			Greatly increases Life Regeneration for 5 seconds.
+			'''
+			ResourceFocus:
+			'''
+			A focus which pulses with energy.
+			Casting costs reduced by 10%.
+			Casting times reduced by 5%.
+			'''
+			ResourceFocusActive: Restores 5% of your Mana.
+			ResourceFocusActiveThorium: Restores 5 Inspiration.
+			ResourceFocusActiveKaioken: Decreases Kaioken Strain by 5%.
+			ResourceFocusActiveCalamity: Increases Steath gauge by 5%.
+			ResourceFocusActiveDBT: Resotres 5% Ki.
+			BurningFrame: 
+			'''
+			Your spells inflict [c/FFC000:On Fire!] on hit.
+			'''
+			FrigidFrame: 
+			'''
+			Your spells inflict [c/80C3DD:Frostburn] on hit.
 			'''
 			HellstoneRapier: 
 			'''
-			Inflicts [c/FFC000:On Fire!] on hit.
-			Casts a slow-moving [c/FFC000:Explosive] bolt.
+			Creates an [c/FFC000:Explosion] with the finishing blow.
+			'''
+			TheStinger: 
+			'''
+			Finishing blows grants [c/C48403:Honey] for 3 seconds.
 			'''
 		}
 		ProjectileName: {
 			ApprenticeRapierProjectile: Apprentice's Rapier
+		}
+		BuffName: {
+			CureBuff: Cure
+			HealingFocusBuff: Healing Focus
+			ResourceFocusBuff: Magi's Focus
+		}
+		BuffDescription: {
+			CureBuff: Life Renegeration greatly increased.
+			HealingFocusBuff: Wielding a Mendicant's Focus.
+			ResourceFocusBuff: Wielding a Magi's Focus.
 		}
 	}
 }

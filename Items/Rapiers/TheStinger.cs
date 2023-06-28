@@ -19,6 +19,7 @@ using vermage.Projectiles.Swings;
 using vermage.Projectiles.Swings.HellstoneRapier;
 using vermage.Projectiles.Spells;
 using vermage.Projectiles.Swings.TheStinger;
+using vermage.Systems;
 
 namespace vermage.Items.Rapiers
 {
@@ -36,28 +37,28 @@ namespace vermage.Items.Rapiers
             Item.autoReuse = true;
 
             Item.shoot = ProjectileType<TheStingerProjectile>();
-            Item.shootSpeed = 20f;
 
-            Item.damage = 24;
-            Item.knockBack = 4f;
             Item.crit = 7;
-            
-            MeleeUseTime = 35;
 
-            MageShoot = ProjectileType<JoltProjectile>();
-            MageShootSpeed = 7f;
-            MageKnockback = 5f;
-            MageDamage = 6;
-            MageUseTime = 15;
-            CastTime = (int)(60f * 1.5f);
-
-            Item.mana = 2;
-            ComboSteps = 2;
-            SlashProjectile = ProjectileType<TheStingerSlashProjectile>();
-            JabProjectile = ProjectileType<TheStingerJabProjectile>();
+            Item.mana = 13;
 
             base.SetDefaults();
         }
-        
+
+        public override DuelData GetDuelData()
+        {
+            return new DuelData()
+                .SetDamage(24)
+                .SetKnockback(4f)
+                .SetUseTime(32)
+                .SetFirstAttack(ProjectileType<TheStingerJabProjectile>())
+                .SetSecondAttack(ProjectileType<TheStingerSlashProjectile>())
+                .SetThirdAttack(ProjectileType<TheStingerPierceProjectile>());
+        }
+        public override SpellData GetSpellData()
+        {
+            return SpellData.Jolt().SetDamage(1.25f).SetCastTime((int)(60f * 1f)).SetKnockback(3f).SetProjectileSpeed(7f);
+        }
+
     }
 }

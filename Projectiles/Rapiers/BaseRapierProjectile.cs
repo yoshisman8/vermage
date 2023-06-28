@@ -28,6 +28,9 @@ namespace vermage.Projectiles.Rapiers
         {
             get => (int)Projectile.ai[1];
         }
+
+        public int GuardType;
+
         public Vector2 StancePos;
 
         int idlePause;
@@ -52,11 +55,12 @@ namespace vermage.Projectiles.Rapiers
                 Projectile.DamageType = DamageClass.Magic;
             }
 
-            Projectile.ownerHitCheck = true;
-            Projectile.extraUpdates = 0;
+            Projectile.ownerHitCheck = false;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = 360;
             Projectile.hide = true;
             Projectile.alpha = 255;
+            
         }
         public override void AI()
         {
@@ -80,14 +84,22 @@ namespace vermage.Projectiles.Rapiers
             Projectile.timeLeft = 10;
             player.heldProj = Projectile.whoAmI;
 
+            Projectile.gfxOffY = player.gfxOffY;
 
             if (Projectile.alpha > 0)
             {
                 Projectile.alpha -= 15; // Decrease alpha, increasing visibility.
             }
 
+            if (player.ownedProjectileCounts[GuardType] < 1)
+            {
+                Projectile.NewProjectileDirect(player.GetSource_FromThis(), Projectile.Center, new Vector2(0), GuardType, 0, 0, player.whoAmI, Type);
+            }
+
             UpdateIdle();
             UpdateStance(player);
+
+            vPlayer.RapierPos = (Type, Projectile.Center, Projectile.rotation, DrawOffsetX, DrawOriginOffsetX, DrawOriginOffsetY);
         }
         private void UpdateStance(Player player)
         {
@@ -112,7 +124,6 @@ namespace vermage.Projectiles.Rapiers
                 DrawOffsetX = (int)(Projectile.Size.X * 0.17f) * Projectile.direction;
                 DrawOriginOffsetY = (int)(-Projectile.Size.Y * 0.30f);
                 DrawOriginOffsetX = (int)(-Projectile.Size.X * 0.28f) * Projectile.direction;
-
             }
             else
             {
@@ -178,56 +189,13 @@ namespace vermage.Projectiles.Rapiers
             idlePause--;
         }
 
-        //private void UpdateAttack(Player player)
-        //{
-        //    player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (player.Center -
-        //        new Vector2(Main.MouseWorld.X, (Main.MouseWorld.Y + DrawOriginOffsetY) + 20)
-        //        ).ToRotation() + MathHelper.PiOver2);
-
-        //    Vector2 playerCenter = player.RotatedRelativePoint(player.MountedCenter, false, false);
-        //    Vector2 direction = playerCenter.DirectionTo(Main.MouseWorld);
-        //    direction.Normalize();
-
-        //    ///Projectile.Center = playerCenter + (direction * Projectile.Size.X * 0.5f) + direction * (Timer -1f);
-        //    Projectile.Center = StancePos + direction * (Timer -1f);
-
-        //    Projectile.spriteDirection = (Vector2.Dot(direction, Vector2.UnitX) >= 0f).ToDirectionInt();
-        //    Projectile.direction = Projectile.spriteDirection;
-
-        //    Projectile.rotation = direction.ToRotation() + MathHelper.PiOver2 - MathHelper.PiOver4 * Projectile.spriteDirection;
-
-        //    SetVisualOffsets();
-        //}
-        //private void SetVisualOffsets()
-        //{
-        //    // 32 is the sprite size (here both width and height equal)
-        //    int HalfSpriteWidth = (int)Projectile.Size.X / 2;
-        //    int HalfSpriteHeight = (int)Projectile.Size.Y / 2;
-
-        //    int HalfProjWidth = Projectile.width / 2;
-        //    int HalfProjHeight = Projectile.height / 2;
-
-        //    // Vanilla configuration for "hitbox in middle of sprite"
-        //    DrawOriginOffsetX = 0;
-        //    DrawOffsetX = -(HalfSpriteWidth - HalfProjWidth);
-        //    DrawOriginOffsetY = -(HalfSpriteHeight - HalfProjHeight);
-
-        //    // Vanilla configuration for "hitbox towards the end"
-        //    //if (Projectile.spriteDirection == 1) {
-        //    //	DrawOriginOffsetX = -(HalfProjWidth - HalfSpriteWidth);
-        //    //	DrawOffsetX = (int)-DrawOriginOffsetX * 2;
-        //    //	DrawOriginOffsetY = 0;
-        //    //}
-        //    //else {
-        //    //	DrawOriginOffsetX = (HalfProjWidth - HalfSpriteWidth);
-        //    //	DrawOffsetX = 0;
-        //    //	DrawOriginOffsetY = 0;
-        //    //}
-        //}
-
         public override bool ShouldUpdatePosition() => false;
         public override bool? CanCutTiles() => false;
         public override bool? CanDamage() => false;
 
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            
+        }
     }
 }

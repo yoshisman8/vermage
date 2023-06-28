@@ -8,6 +8,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using vermage.Buffs;
@@ -19,7 +20,6 @@ namespace vermage.Items.Foci
     public class HealingFocus : BaseFoci
     {
         private int BaseHeal;
-        private int RegenDuration;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -30,7 +30,6 @@ namespace vermage.Items.Foci
             Item.shoot = ModContent.ProjectileType<HealingFocusProjectile>();
             ActivationCost = 3;
             BaseHeal = 3;
-            RegenDuration = 5;
         }
         public override void Activate(Player player)
         {
@@ -50,10 +49,14 @@ namespace vermage.Items.Foci
                 bonus = (int)vermage.ThoriumMod.Call("GetHealBonus", player);
             }
 
-            foreach (var p in VerUtils.FindAllNearbyPlayers(player, 300))
+            foreach (var p in VerUtils.FindAllNearbyPlayers(player, 4000, false))
             {
-                
+                if(p.team == player.team)
+                {
+                    p.AddBuff(ModContent.BuffType<CureBuff>(), 60 * 5, false);
+                }
             }
+            player.GetModPlayer<VerPlayer>().FociFramesLeft = 60 * 5;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -69,7 +72,9 @@ namespace vermage.Items.Foci
 
             int index = tooltips.FindIndex(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
 
-            tooltips.Insert(index+1,new TooltipLine(Mod, "Tooltip1", Terraria.Localization.Language.GetTextValue("Mods.vermage.Tooltips.Regen", (BaseHeal + bonus) * RegenDuration, RegenDuration)));
+            tooltips.Insert(index+1,new TooltipLine(Mod, "Tooltip1", Terraria.Localization.Language.GetTextValue("Mods.vermage.ItemTooltip.HealingFocusPassive", BaseHeal + bonus)));
+
+            tooltips.Add(new TooltipLine(Mod, "Tooltip0", Terraria.Localization.Language.GetTextValue("Mods.vermage.ItemTooltip.HealingFocusActive")));
         }
         public override void AddRecipes()
         {
@@ -92,6 +97,57 @@ namespace vermage.Items.Foci
                 .AddTile(TileID.Anvils)
                 .Register();
             }
+        }
+
+        public override void OnHitNPC(Projectile projectile, int damage, NPC target)
+        {
+            if (damage > 0)
+            {
+                Player owner = Main.player[projectile.owner];
+
+                int bonus = 0;
+
+                if (ModLoader.HasMod("ThoriumMod"))
+                {
+                    bonus = (int)vermage.ThoriumMod.Call("GetHealBonus", owner);
+                }
+
+                foreach (var p in VerUtils.FindAllNearbyPlayers(owner, 1000, false))
+                {
+                    if (p.team == owner.team)
+                    {
+                        p.Heal(BaseHeal + bonus);
+                    }
+                }
+            }
+        }
+
+        public override void OnHitPlayer(Projectile projectile, int damage, Player player)
+        {
+            if (damage > 0)
+            {
+                Player owner = Main.player[projectile.owner];
+
+                int bonus = 0;
+
+                if (ModLoader.HasMod("ThoriumMod"))
+                {
+                    bonus = (int)vermage.ThoriumMod.Call("GetHealBonus", owner);
+                }
+
+                foreach (var p in VerUtils.FindAllNearbyPlayers(owner, 1000, false))
+                {
+                    if (p.team == owner.team)
+                    {
+                        p.Heal(BaseHeal + bonus);
+                    }
+                }
+            }
+        }
+
+        public override void OnCast(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int damage, float knockback)
+        {
+            
         }
     }
 }

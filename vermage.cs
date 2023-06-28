@@ -50,5 +50,10 @@ namespace vermage
             }
             Instance.Logger.Warn("In-game SaveConfig failed, code update required.");
         }
+
+        public static BaseFoci[] GetAllFocus()
+        {
+            return Instance.GetContent<BaseFoci>().ToArray();
+        }
     }
 }

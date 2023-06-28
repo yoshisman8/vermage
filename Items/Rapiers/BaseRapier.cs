@@ -22,28 +22,19 @@ namespace vermage.Items.Rapiers
 {
     public abstract class BaseRapier : ModItem
     {
-        public int MageShoot;
-        public float MageShootSpeed;
-        public float MageKnockback;
-        public int MageDamage;
-        public int MageUseTime;
-        public int MeleeUseTime;
-        public int CastTime;
-        public int ComboSteps = 1;
-        public int SlashProjectile;
-        public int JabProjectile;
-        public int CutProjectile;
-        public int StabProjectile;
+        public virtual SpellData GetSpellData() => SpellData.Jolt();
+        public virtual DuelData GetDuelData() => new();
         public override void SetDefaults()
         {
             base.SetDefaults();
             Item.DamageType = GetInstance<VermilionDamageClass>();
-            Item.useTime = MeleeUseTime;
-            Item.useAnimation = MeleeUseTime;
+            Item.useTime = GetDuelData().UseTime;
+            Item.useAnimation = Item.useTime;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.UseSound = SoundID.Item1;
+            Item.UseSound = null;
             Item.noUseGraphic = true;
             Item.noMelee = true;
+            Item.autoReuse = true;
         }
         public override void HoldItem(Player player)
         {
@@ -56,6 +47,7 @@ namespace vermage.Items.Rapiers
                 if (vplayer.Rapier.Value != Type) vplayer.ComboState = 0;
             }
             vplayer.Rapier = Type;
+            vplayer.ActiveSpell = GetSpellData();
 
             if (player.ownedProjectileCounts[Item.shoot] < 1 && vplayer.AttackFramesLeft <= 0)
             {
@@ -67,22 +59,27 @@ namespace vermage.Items.Rapiers
                 Item.useTime = 0;
                 Item.useAnimation = 0;
                 Item.useStyle = ItemUseStyleID.Shoot;
-                Item.UseSound = null;
-                Item.autoReuse = true;
+
+                Item.damage = (int)(GetDuelData().Damage * GetSpellData().DamageMultiplier);
+                Item.knockBack = GetSpellData().Knockback;
+                Item.shootSpeed = GetSpellData().ProjectileSpeed;
             }
             else
             {
-                Item.useTime = MeleeUseTime;
-                Item.useAnimation = MeleeUseTime;
+                Item.useTime = GetDuelData().UseTime;
+                Item.useAnimation = Item.useTime;
                 Item.useStyle = ItemUseStyleID.Swing;
-                Item.UseSound = SoundID.Item1;
-                Item.autoReuse = true;
+
+                Item.damage = GetDuelData().Damage;
+                Item.knockBack = GetDuelData().Knockback;
+                Item.shootSpeed = 1f;
             }
-            if (vplayer.ComboState >= ComboSteps) vplayer.ComboState = 0;
+            if (vplayer.ComboState >= GetDuelData().ComboSteps()) vplayer.ComboState = 0;
         }
         public override void ModifyManaCost(Player player, ref float reduce, ref float mult)
         {
-            if (!player.GetModPlayer<VerPlayer>().IsMageStance && player.altFunctionUse != 2)
+            VerPlayer vplayer = player.GetModPlayer<VerPlayer>();
+            if (!vplayer.IsMageStance && player.altFunctionUse != 2)
             {
                 mult = 0f;
             }
@@ -117,10 +114,14 @@ namespace vermage.Items.Rapiers
             }
 
             int dmgIndex = tooltips.FindIndex(x => x.Mod == "Terraria" && x.Name == "Damage");
-            
+
             tooltips.Insert(dmgIndex + 1, new TooltipLine(vermage.Instance, "ItemName", Terraria.Localization.Language.GetTextValue("Mods.vermage.Tooltips.RightClick")));
 
             if (ModLoader.HasMod("ThoriumMod"))
+            {
+                tooltips.Add(new TooltipLine(vermage.Instance, "Tooltip0", Terraria.Localization.Language.GetTextValue("Mods.vermage.Tooltips.InheritanceThorium")));
+            }
+            else
             {
                 tooltips.Add(new TooltipLine(vermage.Instance, "Tooltip0", Terraria.Localization.Language.GetTextValue("Mods.vermage.Tooltips.Inheritance")));
             }
@@ -167,18 +168,7 @@ namespace vermage.Items.Rapiers
             VerPlayer vPlayer = player.GetModPlayer<VerPlayer>();
             if (vPlayer.IsMageStance)
             {
-                Vector2 Vel;
-                if (vPlayer.FocusPos.HasValue)
-                {
-                    Vel = vPlayer.FocusPos.Value.DirectionTo(Main.MouseWorld);
-                }
-                else
-                {
-                    Vel = player.DirectionTo(Main.MouseWorld);
-                }
-                Vel.Normalize();
-                Vel *= MageShootSpeed;
-                Cast(player, source, vPlayer.FocusPos ?? position, Vel, MageShoot, MageDamage, MageKnockback);
+                Cast(player, source, vPlayer.FocusPos ?? position, velocity, GetSpellData().Projectile, damage, knockback);
             }
             else
             {
@@ -191,52 +181,41 @@ namespace vermage.Items.Rapiers
         public void SwingMelee(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             VerPlayer vPlayer = player.GetModPlayer<VerPlayer>();
-            if (ComboSteps >= 1 && vPlayer.ComboState == 0)
+            if (GetDuelData().ComboSteps() >= 1 && vPlayer.ComboState == 0)
             {
-                Slash(vPlayer, source, position, velocity, type, damage, knockback);
+                FirstStrike(vPlayer, source, position, velocity, type, damage, knockback);
             }
-            else if (ComboSteps >= 2 && vPlayer.ComboState == 1)
+            else if (GetDuelData().ComboSteps() >= 2 && vPlayer.ComboState == 1)
             {
-                Jab(vPlayer, source, position, velocity, type, damage, knockback);
+                SecondStrike(vPlayer, source, position, velocity, type, damage, knockback);
             }
-            else if (ComboSteps >= 3 && vPlayer.ComboState == 2)
+            else if (GetDuelData().ComboSteps() >= 3 && vPlayer.ComboState == 2)
             {
-                Cut(vPlayer, source, position, velocity, type, damage, knockback);
+                ThirdStrike(vPlayer, source, position, velocity, type, damage, knockback);
             }
-            else if (ComboSteps >= 4 && vPlayer.ComboState == 3)
-            {
-                Stab(vPlayer, source, position, velocity, type, damage, knockback);
-            }
+            vPlayer.LastMeleeSwing = DateTime.Now;
+            vPlayer.ComboState++;
+            vPlayer.AttackFramesLeft = GetUseFrames(player);
         }
 
         #region Virtual Methods
-        public virtual void Slash(VerPlayer player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public virtual void FirstStrike(VerPlayer player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectileDirect(source, player.Player.Center, velocity, SlashProjectile, damage, knockback, player.Player.whoAmI, GetUseFrames(player.Player));
-            player.ComboState++;
-            player.AttackFramesLeft = GetUseFrames(player.Player);
+            Projectile.NewProjectileDirect(source, player.Player.Center, velocity, GetDuelData().FirstProjectile, damage, knockback, player.Player.whoAmI, GetUseFrames(player.Player));
         }
-        public virtual void Jab(VerPlayer player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public virtual void SecondStrike(VerPlayer player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectileDirect(source, player.Player.Center, velocity, JabProjectile, damage, knockback, player.Player.whoAmI, GetUseFrames(player.Player), 0f);
-            player.ComboState++;
-            player.AttackFramesLeft = GetUseFrames(player.Player);
+            Projectile.NewProjectileDirect(source, player.Player.Center, velocity, GetDuelData().SecondProjectile, damage, knockback, player.Player.whoAmI, GetUseFrames(player.Player), 0f);
         }
-        public virtual void Cut(VerPlayer player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public virtual void ThirdStrike(VerPlayer player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectileDirect(source, player.Player.Center, velocity, CutProjectile, damage, knockback, player.Player.whoAmI, GetUseFrames(player.Player));
-            player.ComboState++;
-            player.AttackFramesLeft = GetUseFrames(player.Player);
-        }
-        public virtual void Stab(VerPlayer player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectileDirect(source, player.Player.Center, velocity, StabProjectile, damage, knockback, player.Player.whoAmI, GetUseFrames(player.Player));
-            player.ComboState++;
-            player.AttackFramesLeft = GetUseFrames(player.Player);
+            Projectile.NewProjectileDirect(source, player.Player.Center, velocity, GetDuelData().ThirdProjectile, damage, knockback, player.Player.whoAmI, GetUseFrames(player.Player));
         }
         public virtual void Cast(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI);
+
+            player.GetModPlayer<VerPlayer>()?.FrameOnCast?.Invoke(player, source, position, velocity, damage, knockback);
         }
         #endregion
     }
