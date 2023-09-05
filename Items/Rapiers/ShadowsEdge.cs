@@ -19,7 +19,7 @@ using vermage.Projectiles.Swings;
 using vermage.Projectiles.Swings.HellstoneRapier;
 using vermage.Projectiles.Spells;
 using vermage.Projectiles.Swings.TheStinger;
-using vermage.Systems;
+using vermage.Systems.Utilities;
 
 namespace vermage.Items.Rapiers
 {

@@ -11,6 +11,7 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using vermage.Systems;
+using vermage.Systems.Utilities;
 
 namespace vermage.UI.Components
 {

@@ -18,7 +18,7 @@ namespace vermage.Buffs
 
             player.manaCost -= 0.1f;
 
-            player.GetModPlayer<VerPlayer>().CastingTimeMultiplier -= 0.05f;
+            player.GetModPlayer<VerPlayer>().CastingSpeed -= 0.05f;
         }
     }
 }

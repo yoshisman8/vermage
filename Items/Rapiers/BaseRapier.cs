@@ -17,6 +17,8 @@ using vermage.Projectiles.Rapiers;
 using vermage.Systems;
 using static Terraria.ModLoader.ModContent;
 using static Terraria.ModLoader.PlayerDrawLayer;
+using vermage.Systems.Utilities;
+using vermage.Systems.Handlers;
 
 namespace vermage.Items.Rapiers
 {

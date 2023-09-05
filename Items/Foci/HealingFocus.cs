@@ -99,55 +99,55 @@ namespace vermage.Items.Foci
             }
         }
 
-        public override void OnHitNPC(Projectile projectile, int damage, NPC target)
-        {
-            if (damage > 0)
-            {
-                Player owner = Main.player[projectile.owner];
-
-                int bonus = 0;
-
-                if (ModLoader.HasMod("ThoriumMod"))
-                {
-                    bonus = (int)vermage.ThoriumMod.Call("GetHealBonus", owner);
-                }
-
-                foreach (var p in VerUtils.FindAllNearbyPlayers(owner, 1000, false))
-                {
-                    if (p.team == owner.team)
-                    {
-                        p.Heal(BaseHeal + bonus);
-                    }
-                }
-            }
-        }
-
-        public override void OnHitPlayer(Projectile projectile, int damage, Player player)
-        {
-            if (damage > 0)
-            {
-                Player owner = Main.player[projectile.owner];
-
-                int bonus = 0;
-
-                if (ModLoader.HasMod("ThoriumMod"))
-                {
-                    bonus = (int)vermage.ThoriumMod.Call("GetHealBonus", owner);
-                }
-
-                foreach (var p in VerUtils.FindAllNearbyPlayers(owner, 1000, false))
-                {
-                    if (p.team == owner.team)
-                    {
-                        p.Heal(BaseHeal + bonus);
-                    }
-                }
-            }
-        }
-
         public override void OnCast(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int damage, float knockback)
         {
             
+        }
+
+        public override void OnHitNPC(Projectile projectile, NPC Target, NPC.HitInfo hitInfo, int damageDealt)
+        {
+            if (damageDealt > 0)
+            {
+                Player owner = Main.player[projectile.owner];
+
+                int bonus = 0;
+
+                if (ModLoader.HasMod("ThoriumMod"))
+                {
+                    bonus = (int)vermage.ThoriumMod.Call("GetHealBonus", owner);
+                }
+
+                foreach (var p in VerUtils.FindAllNearbyPlayers(owner, 1000, false))
+                {
+                    if (p.team == owner.team)
+                    {
+                        p.Heal(BaseHeal + bonus);
+                    }
+                }
+            }
+        }
+
+        public override void OnHitPlayer(Projectile projectile, Player Target, Player.HurtInfo hitInfo, int damageDealt)
+        {
+            if (damageDealt > 0)
+            {
+                Player owner = Main.player[projectile.owner];
+
+                int bonus = 0;
+
+                if (ModLoader.HasMod("ThoriumMod"))
+                {
+                    bonus = (int)vermage.ThoriumMod.Call("GetHealBonus", owner);
+                }
+
+                foreach (var p in VerUtils.FindAllNearbyPlayers(owner, 1000, false))
+                {
+                    if (p.team == owner.team)
+                    {
+                        p.Heal(BaseHeal + bonus);
+                    }
+                }
+            }
         }
     }
 }

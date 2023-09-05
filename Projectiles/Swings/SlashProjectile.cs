@@ -11,6 +11,7 @@ using vermage.Systems;
 using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
 using System.Diagnostics;
+using vermage.Systems.Handlers;
 
 namespace vermage.Projectiles.Swings
 {
@@ -98,24 +99,24 @@ namespace vermage.Projectiles.Swings
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            base.OnHitNPC(target, damage, knockback, crit);
+            base.OnHitNPC(target, hit, damageDone);
 
-            if (damage > 0)
+            if (damageDone > 0)
             {
                 Player.GetModPlayer<VerPlayer>().AddMana(ManaColor.Black, 0.05f);
 
-                Player.GetModPlayer<VerPlayer>().FocusOnHitNPC?.Invoke(Projectile, damage, target);
+                Player.GetModPlayer<VerPlayer>().FocusOnHitNPC?.Invoke(Projectile, target,hit, damageDone);
             }
         }
-        public override void OnHitPvp(Player target, int damage, bool crit)/* tModPorter Note: Removed. Use OnHitPlayer and check info.PvP */
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            base.OnHitPvp(target, damage, crit);
+            base.OnHitPlayer(target, info);
 
-            if (damage > 0)
+            if (info.Damage > 0)
             {
                 Player.GetModPlayer<VerPlayer>().AddMana(ManaColor.Black, 0.05f);
 
-                Player.GetModPlayer<VerPlayer>().FocusOnHitPlayer?.Invoke(Projectile, damage, target);
+                Player.GetModPlayer<VerPlayer>().FocusOnHitPlayer?.Invoke(Projectile, target, info, info.Damage);
             }
         }
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vermage.Systems
+namespace vermage.Systems.Utilities
 {
     public class Gradient
     {

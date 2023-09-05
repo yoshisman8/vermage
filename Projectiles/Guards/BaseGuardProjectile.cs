@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.ModLoader;
 using vermage.Systems;
+using vermage.Systems.Handlers;
 
 namespace vermage.Projectiles.Guards
 {

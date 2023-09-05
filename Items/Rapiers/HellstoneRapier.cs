@@ -18,7 +18,7 @@ using System.Security.Policy;
 using vermage.Projectiles.Swings;
 using vermage.Projectiles.Swings.HellstoneRapier;
 using vermage.Projectiles.Spells;
-using vermage.Systems;
+using vermage.Systems.Utilities;
 
 namespace vermage.Items.Rapiers
 {

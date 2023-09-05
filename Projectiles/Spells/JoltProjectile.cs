@@ -9,6 +9,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using vermage.Systems;
+using vermage.Systems.Handlers;
+using vermage.Systems.Utilities;
 
 namespace vermage.Projectiles.Spells
 {
@@ -80,32 +82,32 @@ namespace vermage.Projectiles.Spells
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            base.OnHitNPC(target, damage, knockback, crit);
+            base.OnHitNPC(target, hit, damageDone);
 
             Player owner = Main.player[Projectile.owner];
 
-            if (damage > 0)
+            if (damageDone > 0)
             {
                 VerPlayer player = owner.GetModPlayer<VerPlayer>();
 
                 player.AddMana(ManaColor.White, 0.25f);
 
-                player?.FrameOnHitNPC?.Invoke(Projectile, damage, target);
+                player?.FrameOnHitNPC?.Invoke(Projectile, target, hit, damageDone);
             }
         }
-        public override void OnHitPvp(Player target, int damage, bool crit)/* tModPorter Note: Removed. Use OnHitPlayer and check info.PvP */
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            base.OnHitPlayer(target, damage, crit);
+            base.OnHitPlayer(target, info);
 
             Player owner = Main.player[Projectile.owner];
 
-            if (damage > 0)
+            if (info.Damage > 0)
             {
                 VerPlayer player = owner.GetModPlayer<VerPlayer>();
 
                 player.AddMana(ManaColor.White, 0.25f);
 
-                player?.FrameOnHitPlayer?.Invoke(Projectile, damage, target);
+                player?.FrameOnHitPlayer?.Invoke(Projectile, target, info, info.Damage);
             }
         }
         public override void Kill(int timeLeft)

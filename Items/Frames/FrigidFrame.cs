@@ -26,14 +26,15 @@ namespace vermage.Items.Frames
             
         }
 
-        public override void OnHitNPC(Projectile projectile, int damage, NPC target)
+
+        public override void OnHitNPC(Projectile projectile, NPC Target, NPC.HitInfo hitInfo, int damageDealt)
         {
-            target.AddBuff(BuffID.Frostburn, 300);
+            Target.AddBuff(BuffID.Frostburn, 300);
         }
 
-        public override void OnHitPlayer(Projectile projectile, int damage, Player player)
+        public override void OnHitPlayer(Projectile projectile, Player Target, Player.HurtInfo hitInfo, int damageDealt)
         {
-            player.AddBuff(BuffID.Frostburn, 300);
+            Target.AddBuff(BuffID.Frostburn, 300);
         }
     }
 }

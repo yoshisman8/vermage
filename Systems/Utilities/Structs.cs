@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 using vermage.Projectiles.Spells;
 
-namespace vermage.Systems
+namespace vermage.Systems.Utilities
 {
     public struct SpellData
     {
@@ -26,7 +26,7 @@ namespace vermage.Systems
             IconPath = iconPath;
         }
 
-        public SpellData(string _name, string _iconPath, int _projectile, float _projectileSpeed,  int _castTime, float _damage, int _knockback)
+        public SpellData(string _name, string _iconPath, int _projectile, float _projectileSpeed, int _castTime, float _damage, int _knockback)
         {
             Name = _name;
             IconPath = _iconPath;
@@ -44,11 +44,11 @@ namespace vermage.Systems
         }
         public SpellData SetProjectileSpeed(float speed)
         {
-            ProjectileSpeed = speed; 
+            ProjectileSpeed = speed;
             return this;
         }
-        public SpellData SetCastTime(int castTime) 
-        { 
+        public SpellData SetCastTime(int castTime)
+        {
             CastTime = castTime;
             return this;
         }
@@ -57,8 +57,8 @@ namespace vermage.Systems
             DamageMultiplier = damage;
             return this;
         }
-        public SpellData SetKnockback(float knockback) 
-        { 
+        public SpellData SetKnockback(float knockback)
+        {
             Knockback = knockback;
             return this;
         }
@@ -74,7 +74,7 @@ namespace vermage.Systems
         public float Knockback;
         public int UseTime;
 
-        public DuelData(int _damage,  float _knockback, int _useTime, int _slash = -1, int _jab = -1, int _cut = -1, int _stab = -1) 
+        public DuelData(int _damage, float _knockback, int _useTime, int _slash = -1, int _jab = -1, int _cut = -1, int _stab = -1)
         {
             Damage = _damage;
             Knockback = _knockback;

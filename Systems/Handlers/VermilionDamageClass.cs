@@ -8,7 +8,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 
 
-namespace vermage.Systems
+namespace vermage.Systems.Handlers
 {
     public class VermilionDamageClass : DamageClass
     {
@@ -19,7 +19,7 @@ namespace vermage.Systems
             if (damageClass == Magic) return true;
             if (ModLoader.HasMod("ThoriumMod"))
             {
-                if(damageClass == vermage.HealerClass) return true;
+                if (damageClass == vermage.HealerClass) return true;
             }
             return false;
         }

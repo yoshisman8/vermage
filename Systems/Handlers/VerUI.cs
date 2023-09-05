@@ -10,7 +10,7 @@ using Terraria.UI;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
 
-namespace vermage.Systems
+namespace vermage.Systems.Handlers
 {
     public class VerUI : ModSystem
     {

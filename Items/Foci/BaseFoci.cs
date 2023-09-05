@@ -27,8 +27,8 @@ namespace vermage.Items.Foci
         /// </summary>
         public int ActiveDuration = 0;
 
-        public abstract void OnHitNPC(Projectile projectile, int damage, NPC target);
-        public abstract void OnHitPlayer(Projectile projectile, int damage, Player player);
+        public abstract void OnHitNPC(Projectile projectile, NPC Target, NPC.HitInfo hitInfo, int damageDealt);
+        public abstract void OnHitPlayer(Projectile projectile, Player Target, Player.HurtInfo hitInfo, int damageDealt);
         public abstract void OnCast(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int damage, float knockback);
 
         public override void SetDefaults()

@@ -18,6 +18,7 @@ using Terraria.Net;
 using vermage.Buffs;
 using vermage.Items.Foci;
 using vermage.Items.Rapiers;
+using vermage.Systems.Utilities;
 
 namespace vermage.Systems
 {
@@ -26,9 +27,9 @@ namespace vermage.Systems
         public float BlackMana = 0;
         public float WhiteMana = 0;
 
-        public float BaseManaGain = 0.25f;
-        public float CastingTimeMultiplier = 1f;
-        public float CastingCostDiscount = 1f;
+        public StatModifier ManaGainRate = new(1, 1, 0, 0.25f);
+        public StatModifier CastingSpeed = new(1, 1);
+
 
         private DateTime? LastManaGain;
         public DateTime? LastMeleeSwing;
@@ -57,12 +58,12 @@ namespace vermage.Systems
 
         private SlotId? CastingSlot;
 
-        public Action<Projectile, int, NPC> FrameOnHitNPC;
-        public Action<Projectile, int, Player> FrameOnHitPlayer;
+        public Action<Projectile, NPC, NPC.HitInfo, int> FrameOnHitNPC;
+        public Action<Projectile, Player, Player.HurtInfo, int> FrameOnHitPlayer;
         public Action<Player, EntitySource_ItemUse_WithAmmo, Vector2, Vector2, int, float> FrameOnCast;
 
-        public Action<Projectile, int, NPC> FocusOnHitNPC;
-        public Action<Projectile, int, Player> FocusOnHitPlayer;
+        public Action<Projectile, NPC, NPC.HitInfo, int> FocusOnHitNPC;
+        public Action<Projectile, Player, Player.HurtInfo, int> FocusOnHitPlayer;
         public Action<Player, EntitySource_ItemUse_WithAmmo,Vector2,Vector2,int,float> FocusOnCast;
 
         public int GetCombinedMana()
@@ -134,7 +135,7 @@ namespace vermage.Systems
                                 result.Stop();
                             }
                             CastingSlot = SoundEngine.PlaySound(new SoundStyle("vermage/Assets/Sounds/Latch"), Player.position);
-                            int time = Math.Max(20, (int)(frames * CastingTimeMultiplier));
+                            int time = (int)CastingSpeed.ApplyTo(frames);
                             CastFrames = (time, time);
                             IsCasting = true;
                         }
@@ -310,11 +311,10 @@ namespace vermage.Systems
             FrameType = null;
             
             MaxMana = 3;
-            BaseManaGain = 0.25f;
-            CastingCostDiscount = 1f;
-            CastingTimeMultiplier = 1f;
+            ManaGainRate = new(1, 1, 0, 0.25f);
+            CastingSpeed = new(1, 1);
 
-            FrameOnCast = null;
+        FrameOnCast = null;
             FrameOnHitNPC = null;
             FrameOnHitPlayer = null;
 
