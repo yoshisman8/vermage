@@ -28,21 +28,21 @@ namespace vermage.UI.Components
             base.OnInitialize();
         }
 
-        public override void MouseDown(UIMouseEvent evt)
+        public override void LeftMouseDown(UIMouseEvent evt)
         {
             if (ShouldDrag()) 
             {
                 DragStart(evt);
-                base.MouseDown(evt);
+                base.LeftMouseDown(evt);
             }
         }
 
-        public override void MouseUp(UIMouseEvent evt)
+        public override void LeftMouseUp(UIMouseEvent evt)
         {
             if (ShouldDrag()) 
             {
                 DragEnd(evt);
-                base.MouseUp(evt);
+                base.LeftMouseUp(evt);
             }
         }
 

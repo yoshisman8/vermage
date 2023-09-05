@@ -13,7 +13,8 @@ using static Terraria.ModLoader.ModContent;
 using System.Security.Policy;
 using static Terraria.ModLoader.PlayerDrawLayer;
 using Steamworks;
-using System.Drawing;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 
 namespace vermage.Projectiles.Rapiers
 {
@@ -30,6 +31,7 @@ namespace vermage.Projectiles.Rapiers
         }
 
         public int GuardType;
+        
 
         public Vector2 StancePos;
 
@@ -45,15 +47,7 @@ namespace vermage.Projectiles.Rapiers
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.scale = 1f;
-
-            if (ModLoader.HasMod("ThoriumMod"))
-            {
-                Projectile.DamageType = GetInstance<VermilionDamageClass>();
-            }
-            else
-            {
-                Projectile.DamageType = DamageClass.Magic;
-            }
+            Projectile.DamageType = GetInstance<VermilionDamageClass>();
 
             Projectile.ownerHitCheck = false;
             Projectile.extraUpdates = 1;
@@ -69,7 +63,7 @@ namespace vermage.Projectiles.Rapiers
 
             if (vPlayer.Rapier.HasValue)
             {
-                if (vPlayer.Rapier.Value != RapierID || vPlayer.AttackFramesLeft > 0)
+                if (vPlayer.Rapier.Value.ItemType != RapierID || vPlayer.AttackFramesLeft > 0)
                 {
                     Projectile.Kill();
                     return;
@@ -99,7 +93,7 @@ namespace vermage.Projectiles.Rapiers
             UpdateIdle();
             UpdateStance(player);
 
-            vPlayer.RapierPos = (Type, Projectile.Center, Projectile.rotation, DrawOffsetX, DrawOriginOffsetX, DrawOriginOffsetY);
+            vPlayer.RapierID = Projectile.whoAmI;
         }
         private void UpdateStance(Player player)
         {
@@ -193,9 +187,27 @@ namespace vermage.Projectiles.Rapiers
         public override bool? CanCutTiles() => false;
         public override bool? CanDamage() => false;
 
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
+        
+        //public override void PostDraw(Microsoft.Xna.Framework.Color lightColor)
+        //{
+        //    if (!string.IsNullOrEmpty(GuardTexture))
+        //    {
+        //        Asset<Texture2D> texture = Request<Texture2D>(GuardTexture);
+
+        //        Player player = Main.player[Projectile.owner];
+
+        //        SpriteEffects effect = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+        //        Vector2 position = new Vector2(Projectile.position.X, Projectile.position.Y + DrawOriginOffsetY);
+        //        Vector2 origin = new Vector2(DrawOriginOffsetX, DrawOriginOffsetY);
+
+                
+        //        Main.EntitySpriteDraw(texture.Value, position - Main.screenPosition, texture.Value.Bounds, Color.White, Projectile.rotation, Vector2.Zero, Projectile.scale, effect, 1);
+        //    }
+        //}
+        //public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        //{
             
-        }
+        //}
     }
 }

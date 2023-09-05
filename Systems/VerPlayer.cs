@@ -1,5 +1,4 @@
-﻿using IL.Terraria.Net;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Bson;
 using ReLogic.Utilities;
 using Steamworks;
@@ -15,6 +14,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.UI;
 using Terraria.GameInput;
 using Terraria.ModLoader;
+using Terraria.Net;
 using vermage.Buffs;
 using vermage.Items.Foci;
 using vermage.Items.Rapiers;
@@ -44,12 +44,13 @@ namespace vermage.Systems
         public bool IsCasting = false;
         public SpellData? ActiveSpell;
 
-        public int? Focus = null;
-        public int? Rapier = null;
-        public int? Frame = null;
+        public (int ItemType, int BuffType, int ProjectyleType)? Focus = null;
+        public int? FocusID = null;
 
-        public Vector2? FocusPos;
-        public (int Type, Vector2 Center, float Rotation, int DrawOffsetX, float DrawOriginOffsetX, int DrawOriginOffsetY)? RapierPos;
+        public (int ItemType, int ProjectileType)? Rapier = null;
+        public int? RapierID = null;
+
+        public int? FrameType = null;
 
         public static ModKeybind ActionKey;
         public static ModKeybind QuickFociToggle;
@@ -95,7 +96,7 @@ namespace vermage.Systems
             {
                 if (Focus.HasValue)
                 {
-                    BaseFoci foci = ModContent.GetModItem(Focus.Value) as BaseFoci;
+                    BaseFoci foci = ModContent.GetModItem(Focus.Value.ItemType) as BaseFoci;
 
                     if (GetCombinedMana() >= foci.ActivationCost)
                     {
@@ -123,7 +124,7 @@ namespace vermage.Systems
                     
                     if (Rapier.HasValue)
                     {
-                        BaseRapier r = ModContent.GetModItem(Rapier.Value) as BaseRapier;
+                        BaseRapier r = ModContent.GetModItem(Rapier.Value.ItemType) as BaseRapier;
                         var frames = r.GetSpellData().CastTime;
 
                         if (frames > 0)
@@ -200,7 +201,7 @@ namespace vermage.Systems
             {
                 if (Foci.Count == 1) return;
 
-                int index = Foci.FindIndex(x => x.Type == Focus.Value);
+                int index = Foci.FindIndex(x => x.Type == Focus.Value.ItemType);
 
                 if (index >= Foci.Count - 1)
                 {
@@ -230,7 +231,7 @@ namespace vermage.Systems
             {
                 if (Player.inventory[i].ModItem is BaseFoci foci)
                 {
-                    if (foci.Type == Focus.Value) return foci;
+                    if (foci.Type == Focus.Value.ItemType) return foci;
                 }
             }
             return null;
@@ -294,19 +295,19 @@ namespace vermage.Systems
 
             if (!Rapier.HasValue)
             {
-                RapierPos = null;
+                RapierID = null;
+            }
+
+            if (!Focus.HasValue)
+            {
+                FocusID = null;
             }
 
             Rapier = null;
-            
-            if (!Focus.HasValue)
-            {
-                FocusPos = null;
-            }
 
             Focus = null;
 
-            Frame = null;
+            FrameType = null;
             
             MaxMana = 3;
             BaseManaGain = 0.25f;
@@ -321,6 +322,8 @@ namespace vermage.Systems
             FocusOnHitNPC = null;
             FocusOnHitPlayer = null;
         }
+
+        
     }
 
     public enum ManaColor

@@ -96,7 +96,7 @@ namespace vermage.Projectiles.Swings
         {
             return Utils.Clamp(1 - (Projectile.timeLeft / Projectile.ai[0]), 0f, 1f);
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             base.OnHitNPC(target, damage, knockback, crit);
 
@@ -107,7 +107,7 @@ namespace vermage.Projectiles.Swings
                 Player.GetModPlayer<VerPlayer>().FocusOnHitNPC?.Invoke(Projectile, damage, target);
             }
         }
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPvp(Player target, int damage, bool crit)/* tModPorter Note: Removed. Use OnHitPlayer and check info.PvP */
         {
             base.OnHitPvp(target, damage, crit);
 

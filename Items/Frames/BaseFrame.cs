@@ -61,13 +61,15 @@ namespace vermage.Items.Franes
             vPlayer.FrameOnCast = OnCast;
             vPlayer.FrameOnHitNPC = OnHitNPC;
             vPlayer.FrameOnHitPlayer = OnHitPlayer;
-            vPlayer.Frame = Type;
+            vPlayer.FrameType = Type;
 
-            if (vPlayer.Focus.HasValue && vPlayer.FocusPos.HasValue)
+            if (vPlayer.Focus.HasValue && vPlayer.FocusID.HasValue)
             {
                 if (player.ownedProjectileCounts[Item.shoot] < 1)
                 {
-                    Projectile.NewProjectileDirect(player.GetSource_ItemUse(Item), vPlayer.FocusPos.Value, new Vector2(0), Item.shoot, Item.damage, Item.knockBack, player.whoAmI, Item.buffType);
+                    Vector2 focusPos = Main.projectile[vPlayer.FocusID.Value].position;
+
+                    Projectile.NewProjectileDirect(player.GetSource_ItemUse(Item), focusPos, new Vector2(0), Item.shoot, Item.damage, Item.knockBack, player.whoAmI, Item.buffType);
                 }
             }
         }

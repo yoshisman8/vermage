@@ -43,24 +43,27 @@ namespace vermage.Projectiles.Foci
             Projectile.light = 1f;
         }
 
-        public override bool PreAI()
-        {
-            Player player = Main.player[Projectile.owner];
-            return true;
-        }
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
             VerPlayer vPlayer = player.GetModPlayer<VerPlayer>();
             Projectile.scale = 0.7f;
-            if (!player.HasBuff(BuffId))
+
+            if(!vPlayer.Focus.HasValue)
             {
                 Projectile.Kill();
             }
+
+            if (!player.HasBuff(vPlayer.Focus.Value.BuffType))
+            {
+                Projectile.Kill();
+            }
+
             if (player.dead && !player.active)
             {
                 Projectile.Kill();
             }
+
             Projectile.timeLeft = 10;
             Projectile.alpha -= 10;
 
@@ -72,7 +75,8 @@ namespace vermage.Projectiles.Foci
             {
                 UpdateHeld(player);
             }
-            vPlayer.FocusPos = new Vector2(Projectile.Center.X, Projectile.Center.Y + DrawOriginOffsetY);
+
+            vPlayer.FocusID = Projectile.whoAmI;
         }
         private void UpdateHeld(Player player)
         {

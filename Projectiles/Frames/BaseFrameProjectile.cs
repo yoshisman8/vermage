@@ -36,32 +36,31 @@ namespace vermage.Projectiles.Frames
             Player owner = Main.player[Projectile.owner];
             VerPlayer verOwner = owner.GetModPlayer<VerPlayer>();
 
-            if (!verOwner.Focus.HasValue || !verOwner.FocusPos.HasValue)
+            if (!verOwner.Focus.HasValue || !verOwner.FocusID.HasValue)
             {
                 Projectile.Kill();
                 return;
             }
 
-            if (!verOwner.Frame.HasValue)
+            if (!verOwner.FrameType.HasValue)
             {
                 Projectile.Kill();
                 return;
             }
 
-            BaseFrame frame = ModContent.GetModItem(verOwner.Frame.Value) as BaseFrame;
+            var focus = Main.projectile[verOwner.FocusID.Value].ModProjectile;
 
-            if (frame == null)
-            {
-                Projectile.Kill();
-                return;
-            }
-            if (frame.Item.shoot != Type)
-            {
-                Projectile.Kill();
-                return;
-            }
+            Projectile.direction = owner.direction;
+            Projectile.spriteDirection = Projectile.direction;
+
             Projectile.alpha -= 5;
-            Projectile.Center = verOwner.FocusPos.Value + new Vector2(0, Projectile.Size.Y*0.08f);
+            Projectile.position = focus.Projectile.position;
+            Projectile.position.Y += Projectile.Size.Y * 0.01f;
+            Projectile.rotation = focus.Projectile.rotation;
+            
+            DrawOriginOffsetY = focus.DrawOriginOffsetY;
+            
+            
             Projectile.timeLeft = 4;
 
             if (verOwner.IsCasting)

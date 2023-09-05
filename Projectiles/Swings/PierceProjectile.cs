@@ -1,5 +1,4 @@
-﻿using IL.Terraria.GameContent.Bestiary;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Bestiary;
 using Terraria.ModLoader;
 using vermage.Systems;
 
@@ -93,7 +93,7 @@ namespace vermage.Projectiles.Swings
 
         }
         public override bool ShouldUpdatePosition() => false;
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             base.OnHitNPC(target, damage, knockback, crit);
 
@@ -104,7 +104,7 @@ namespace vermage.Projectiles.Swings
                 Player.GetModPlayer<VerPlayer>().FocusOnHitNPC?.Invoke(Projectile, damage, target);
             }
         }
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPvp(Player target, int damage, bool crit)/* tModPorter Note: Removed. Use OnHitPlayer and check info.PvP */
         {
             base.OnHitPvp(target, damage, crit);
 

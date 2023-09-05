@@ -25,20 +25,13 @@ namespace vermage.Projectiles.Guards
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.scale = 1f;
-
-            if (ModLoader.HasMod("ThoriumMod"))
-            {
-                Projectile.DamageType = ModContent.GetInstance<VermilionDamageClass>();
-            }
-            else
-            {
-                Projectile.DamageType = DamageClass.Magic;
-            }
+            Projectile.DamageType = ModContent.GetInstance<VermilionDamageClass>();
 
             Projectile.ownerHitCheck = true;
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 360;
             Projectile.hide = true;
+            
         }
         public override bool ShouldUpdatePosition() => false;
         public override bool? CanCutTiles() => false;
@@ -50,6 +43,12 @@ namespace vermage.Projectiles.Guards
 
             Player owner = Main.player[Projectile.owner];
             VerPlayer player = owner.GetModPlayer<VerPlayer>();
+
+            if (owner.ownedProjectileCounts[Type] > 2)
+            {
+                Projectile.Kill();
+                return;
+            }
 
             if (player.AttackFramesLeft > 0)
             {
@@ -63,15 +62,15 @@ namespace vermage.Projectiles.Guards
                 return;
             }
 
-            if (!player.RapierPos.HasValue)
+            if (!player.RapierID.HasValue)
             {
                 Projectile.Kill();
                 return;
             }
 
-            var data = player.RapierPos.Value;
+            ModProjectile rapier = Main.projectile[player.RapierID.Value].ModProjectile;
 
-            if (MasterType != data.Type)
+            if (MasterType != rapier.Type)
             {
                 Projectile.Kill();
                 return;
@@ -87,11 +86,11 @@ namespace vermage.Projectiles.Guards
             Projectile.direction = owner.direction;
             Projectile.spriteDirection = Projectile.direction;
             Projectile.gfxOffY = owner.gfxOffY;
-            Projectile.Center = data.Center;
-            Projectile.rotation = data.Rotation;
-            DrawOffsetX = data.DrawOffsetX;
-            DrawOriginOffsetX = data.DrawOriginOffsetX;
-            DrawOriginOffsetY = data.DrawOriginOffsetY;
+            Projectile.position = rapier.Projectile.position;
+            Projectile.rotation = rapier.Projectile.rotation;
+            DrawOffsetX = rapier.DrawOffsetX;
+            DrawOriginOffsetX = rapier.DrawOriginOffsetX;
+            DrawOriginOffsetY = rapier.DrawOriginOffsetY;
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)

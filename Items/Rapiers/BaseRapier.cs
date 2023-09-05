@@ -44,9 +44,11 @@ namespace vermage.Items.Rapiers
 
             if (vplayer.Rapier.HasValue)
             {
-                if (vplayer.Rapier.Value != Type) vplayer.ComboState = 0;
+                if (vplayer.Rapier.Value.ItemType != Type) vplayer.ComboState = 0;
             }
-            vplayer.Rapier = Type;
+
+            vplayer.Rapier = (Type, Item.shoot);
+
             vplayer.ActiveSpell = GetSpellData();
 
             if (player.ownedProjectileCounts[Item.shoot] < 1 && vplayer.AttackFramesLeft <= 0)
@@ -168,7 +170,14 @@ namespace vermage.Items.Rapiers
             VerPlayer vPlayer = player.GetModPlayer<VerPlayer>();
             if (vPlayer.IsMageStance)
             {
-                Cast(player, source, vPlayer.FocusPos ?? position, velocity, GetSpellData().Projectile, damage, knockback);
+                Vector2 shootPos = position;
+
+                if (vPlayer.FocusID.HasValue)
+                {
+                    shootPos = Main.projectile[vPlayer.FocusID.Value].Center;
+                }
+
+                Cast(player, source, shootPos, velocity, GetSpellData().Projectile, damage, knockback);
             }
             else
             {
