@@ -20,6 +20,9 @@ using vermage.Projectiles.Swings.HellstoneRapier;
 using vermage.Projectiles.Spells;
 using vermage.Projectiles.Swings.TheStinger;
 using vermage.Systems.Utilities;
+using vermage.Items.Abstracts;
+using vermage.Projectiles.Foci;
+using vermage.Projectiles.Guards;
 
 namespace vermage.Items.Rapiers
 {
@@ -34,31 +37,18 @@ namespace vermage.Items.Rapiers
             Item.value = Item.sellPrice(0, 0, 0, 50);
             Item.rare = ItemRarityID.Orange;
 
-            Item.autoReuse = true;
-
-            Item.shoot = ProjectileType<DarkSaberProjectile>();
-
             Item.crit = 7;
+            Item.damage = 24;
+            Item.knockBack = 4f;
+            Item.useTime = 64;
+            Item.useAnimation = 64;
 
-            Item.mana = 13;
+            RapierProjectile = ProjectileType<DarkSaberProjectile>();
+            FocusProjectile = ProjectileType<ExampleFocusProjectile>();
 
             base.SetDefaults();
         }
 
-        public override DuelData GetDuelData()
-        {
-            return new DuelData()
-                .SetDamage(24)
-                .SetKnockback(4f)
-                .SetUseTime(32)
-                .SetFirstAttack(ProjectileType<TheStingerJabProjectile>())
-                .SetSecondAttack(ProjectileType<TheStingerSlashProjectile>())
-                .SetThirdAttack(ProjectileType<TheStingerPierceProjectile>());
-        }
-        public override SpellData GetSpellData()
-        {
-            return SpellData.Jolt().SetDamage(1.25f).SetCastTime((int)(60f * 1f)).SetKnockback(3f).SetProjectileSpeed(7f);
-        }
 
     }
 }

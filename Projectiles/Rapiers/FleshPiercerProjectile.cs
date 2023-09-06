@@ -19,12 +19,12 @@ using vermage.Projectiles.Abstracts;
 
 namespace vermage.Projectiles.Rapiers
 {
-    public class DarkSaberProjectile : BaseRapierProjectile
+    public class FleshPiercerProjectile : BaseRapierProjectile
     {
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Projectile.Size = new Vector2(50);
+            Projectile.Size = new Vector2(50,58);
         }
 
     }

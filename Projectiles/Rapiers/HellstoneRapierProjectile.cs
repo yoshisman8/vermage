@@ -15,6 +15,7 @@ using static Terraria.ModLoader.PlayerDrawLayer;
 using Steamworks;
 using System.Drawing;
 using vermage.Projectiles.Guards;
+using vermage.Projectiles.Abstracts;
 
 namespace vermage.Projectiles.Rapiers
 {

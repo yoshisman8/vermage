@@ -19,6 +19,9 @@ using vermage.Projectiles.Swings;
 using vermage.Projectiles.Swings.HellstoneRapier;
 using vermage.Projectiles.Spells;
 using vermage.Systems.Utilities;
+using vermage.Items.Abstracts;
+using vermage.Projectiles.Foci;
+using vermage.Projectiles.Guards;
 
 namespace vermage.Items.Rapiers
 {
@@ -33,34 +36,19 @@ namespace vermage.Items.Rapiers
             Item.value = Item.sellPrice(0, 0, 0, 50);
             Item.rare = ItemRarityID.Orange;
 
-            Item.autoReuse = true;
-
-            Item.shoot = ProjectileType<HellstoneRapierProjectile>();
-
             Item.crit = 7;
+            Item.damage = 24;
+            Item.knockBack = 4f;
+            Item.useTime = 64;
+            Item.useAnimation = 64;
 
-            Item.mana = 15;
+            RapierProjectile = ProjectileType<HellstoneRapierProjectile>();
+            GuardProjectile = ProjectileType<HellstoneRapierGuardProjectile>();
+            FocusProjectile = ProjectileType<ExampleFocusProjectile>();
 
             base.SetDefaults();
         }
 
-        public override DuelData GetDuelData()
-        {
-            return new DuelData()
-                .SetDamage(24)
-                .SetKnockback(4f)
-                .SetUseTime(64)
-                .SetFirstAttack(ProjectileType<HellstoneSlashProjectile>())
-                .SetSecondAttack(ProjectileType<HellstoneJabProjectile>());
-        }
-        public override SpellData GetSpellData()
-        {
-            return SpellData.Jolt()
-                .SetDamage(1.83f)
-                .SetCastTime((int)(60f * 1.8f))
-                .SetKnockback(7f)
-                .SetProjectileSpeed(7f);
-        }
         public override void AddRecipes()
         {
             CreateRecipe()

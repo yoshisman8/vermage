@@ -16,8 +16,9 @@ using Terraria.GameInput;
 using Terraria.ModLoader;
 using Terraria.Net;
 using vermage.Buffs;
-using vermage.Items.Foci;
-using vermage.Items.Rapiers;
+using vermage.Items.Abstracts;
+using vermage.Projectiles.Rapiers;
+using vermage.Systems.Events;
 using vermage.Systems.Utilities;
 
 namespace vermage.Systems
@@ -26,62 +27,99 @@ namespace vermage.Systems
     {
         public float BlackMana = 0;
         public float WhiteMana = 0;
-
-        public StatModifier ManaGainRate = new(1, 1, 0, 0.25f);
-        public StatModifier CastingSpeed = new(1, 1);
-
-
-        private DateTime? LastManaGain;
-        public DateTime? LastMeleeSwing;
-
         public int MaxMana = 3;
-
-        public float FociFramesLeft = 0;
-        public int AttackFramesLeft = 0;
-        public (int Total, int Left) CastFrames = (0,0);
-        public int ComboState = 0;
-
-        public bool IsMageStance = false;
-        public bool IsCasting = false;
-        public SpellData? ActiveSpell;
-
-        public (int ItemType, int BuffType, int ProjectyleType)? Focus = null;
-        public int? FocusID = null;
-
-        public (int ItemType, int ProjectileType)? Rapier = null;
-        public int? RapierID = null;
-
-        public int? FrameType = null;
-
-        public static ModKeybind ActionKey;
-        public static ModKeybind QuickFociToggle;
-
-        private SlotId? CastingSlot;
-
-        public Action<Projectile, NPC, NPC.HitInfo, int> FrameOnHitNPC;
-        public Action<Projectile, Player, Player.HurtInfo, int> FrameOnHitPlayer;
-        public Action<Player, EntitySource_ItemUse_WithAmmo, Vector2, Vector2, int, float> FrameOnCast;
-
-        public Action<Projectile, NPC, NPC.HitInfo, int> FocusOnHitNPC;
-        public Action<Projectile, Player, Player.HurtInfo, int> FocusOnHitPlayer;
-        public Action<Player, EntitySource_ItemUse_WithAmmo,Vector2,Vector2,int,float> FocusOnCast;
-
         public int GetCombinedMana()
         {
             return (int)Math.Min(Math.Floor(BlackMana), Math.Floor(WhiteMana));
         }
-        public void RemoveAllFoci()
+        public void AddMana(ManaColor Type, float amount)
         {
-            
-            foreach (var focus in vermage.Instance.GetContent<BaseFoci>())
+            switch (Type)
             {
-                if (Player.HasBuff(focus.Item.buffType))
-                {
-                    int index = Player.FindBuffIndex(focus.Item.buffType);
-                    Player.DelBuff(index);
-                }
+                case ManaColor.Black:
+                    if (amount > 0) BlackMana += ManaGainRate.ApplyTo(amount);
+                    else BlackMana += amount; break;
+                case ManaColor.White:
+                    if (amount > 0) WhiteMana += ManaGainRate.ApplyTo(amount);
+                    else WhiteMana += amount; break;
+                default:
+                    if (amount > 0) BlackMana += ManaGainRate.ApplyTo(amount);
+                    else BlackMana += amount;
+                    if (amount > 0) WhiteMana += ManaGainRate.ApplyTo(amount);
+                    else WhiteMana += amount; break;
             }
         }
+
+        
+        public string Slot1;
+        public string Slot2;
+        public int SelectedSlot = 1;
+        public bool IsCasting;
+        public bool WasCasting;
+        public void CycleSlots()
+        {
+            if (SelectedSlot == 1) SelectedSlot = 2;
+            else SelectedSlot = 1;
+        }
+        public SpellData? GetCurrentSpell()
+        {
+            if (SelectedSlot == 1)
+            {
+                if (GetSpellInSlot(1).HasValue) return GetSpellInSlot(1).Value;
+                else if (GetSpellInSlot(2).HasValue) return GetSpellInSlot(2).Value;
+                else return null;
+            }
+            else
+            {
+                if (GetSpellInSlot(2).HasValue) return GetSpellInSlot(2).Value;
+                else if (GetSpellInSlot(1).HasValue) return GetSpellInSlot(1).Value;
+                else return null;
+            }
+        }
+        public SpellData? GetSpellInSlot(int Slot)
+        {
+            Slot = Utils.Clamp(Math.Abs(Slot), 1, 2);
+
+            if (Slot == 1)
+            {
+                if (string.IsNullOrEmpty(Slot1)) return null;
+                else if (vermage.Spells.TryGetValue(Slot1, out SpellData value)) return value;
+                else return null;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(Slot2)) return null;
+                else if (vermage.Spells.TryGetValue(Slot2, out SpellData value)) return value;
+                else return null;
+            }
+        }
+
+
+        public StatModifier ManaGainRate = new(1f, 1f);
+        public StatModifier CastingSpeed = new(1f, Main.frameRate);
+
+        public static ModKeybind ToggleSpellbook;
+        public static ModKeybind SwapSpells;
+
+        private SlotId? CastingSFXSlot;
+
+        public List<IVerEvent> Events = new();
+
+        public Vector2? FocusPosition;
+        public RapierData? Rapier { get
+            {
+                if (Player.HeldItem.ModItem is BaseRapier)
+                {
+                    return (Player.HeldItem.ModItem as BaseRapier).RapierData;
+                }
+                return null;
+            }
+        }
+        public Behavior RapierBehavior = Behavior.Idle;
+        public int BehaviorFrames = 0;
+        public int CastingTimer = 0;
+        public Dictionary<string, DateTime> LastRapierUsage = new();
+        public bool LungeTechnique = false;
 
         public override void PreUpdate()
         {
@@ -93,237 +131,109 @@ namespace vermage.Systems
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            if (ActionKey.JustPressed)
+            if (SwapSpells.JustPressed)
             {
-                if (Focus.HasValue)
-                {
-                    BaseFoci foci = ModContent.GetModItem(Focus.Value.ItemType) as BaseFoci;
 
-                    if (GetCombinedMana() >= foci.ActivationCost)
-                    {
-                        BlackMana -= foci.ActivationCost;
-                        WhiteMana -= foci.ActivationCost;
-                        foci.Activate(Player);
-                    }
+            }
+
+            if (IsCasting && Main.mouseRight)
+            {
+                var spellData = GetCurrentSpell();
+                if (spellData.HasValue)
+                {
+                    HandleCasting();
                 }
             }
-            if (QuickFociToggle.JustPressed)
+            else if (IsCasting && !Main.mouseRight)
             {
-                CycleFoci();
+                IsCasting = false;
+                CastingTimer = 0;
+                RapierBehavior = Behavior.Idle;
+                BehaviorFrames = 0;
             }
 
-            HandleCasting();
         }
         public void HandleCasting()
         {
-            // Check if the player has a rapier and is in mage stance
-            if (Rapier.HasValue && IsMageStance && Main.mouseLeft)
+            if (CastingTimer == 0)
             {
-                // If Mouse 1 was just pressed and there is no CastFrame data
-                if (Main.mouseLeft && CastFrames == (0, 0))
-                {
-                    
-                    if (Rapier.HasValue)
-                    {
-                        BaseRapier r = ModContent.GetModItem(Rapier.Value.ItemType) as BaseRapier;
-                        var frames = r.GetSpellData().CastTime;
-
-                        if (frames > 0)
-                        {
-                            if (SoundEngine.TryGetActiveSound(CastingSlot ?? SlotId.Invalid, out ActiveSound result))
-                            {
-                                result.Stop();
-                            }
-                            CastingSlot = SoundEngine.PlaySound(new SoundStyle("vermage/Assets/Sounds/Latch"), Player.position);
-                            int time = (int)CastingSpeed.ApplyTo(frames);
-                            CastFrames = (time, time);
-                            IsCasting = true;
-                        }
-                    }
-                    
-                }
-                // If Mouse 1 is being held & there's cast frames left to go
-                else if (Main.mouseLeft && !Main.mouseLeftRelease && CastFrames.Left > 0)
-                {
-                    CastFrames.Left--; // Lower casting frames by 1
-                    IsCasting = true; // Keep IsCasting to true
-                }
-                else if (Main.mouseLeft && !Main.mouseLeftRelease && CastFrames.Left == 0)
-                {
-                    IsCasting = true;
-                    Player.itemTime = 0;
-                    Player.itemAnimation = 0;
-                    CastFrames.Left--;
-                }
-                else if (Main.mouseLeft && !Main.mouseLeftRelease && CastFrames.Left < 1)
-                {
-                    CastFrames = (0, 0);
-                    IsCasting = false;
-                    if (SoundEngine.TryGetActiveSound(CastingSlot ?? SlotId.Invalid, out ActiveSound result))
-                    {
-                        result.Stop();
-                    }
-                }
-                else
-                {
-                    CastFrames = (0, 0);
-                    IsCasting = false;
-                    if (SoundEngine.TryGetActiveSound(CastingSlot ?? SlotId.Invalid, out ActiveSound result))
-                    {
-                        result.Stop();
-                    }
-                }
+                SoundEngine.PlaySound(new SoundStyle("vermage/Assets/Sounds/Latch"));
             }
-            else
+            else if (CastingTimer > BehaviorFrames)
             {
-                CastFrames = (0, 0);
                 IsCasting = false;
-                if (SoundEngine.TryGetActiveSound(CastingSlot ?? SlotId.Invalid, out ActiveSound result))
-                {
-                    result.Stop();
-                }
+                RapierBehavior = Behavior.Idle;
+                BehaviorFrames = 0;
+                CastingTimer = 0;
             }
+            CastingTimer++;
         }
-        public void CycleFoci()
-        {
-            List<BaseFoci> Foci = new List<BaseFoci>();
 
-            for (int i = Main.InventoryItemSlotsStart; i < 9; i++)
-            {
-                if (Player.inventory[i].ModItem is BaseFoci foci)
-                {
-                    Foci.Add(foci);
-                }
-            }
-            
-            if (Foci.Count == 0) return;
-
-            if (Focus.HasValue)
-            {
-                if (Foci.Count == 1) return;
-
-                int index = Foci.FindIndex(x => x.Type == Focus.Value.ItemType);
-
-                if (index >= Foci.Count - 1)
-                {
-                    var f = Foci.First();
-                    //CombatText.NewText(Player.Hitbox, ItemRarity.GetColor(f.Item.rare), f.DisplayName.GetDefault());
-                    f.Toggle(Player);
-                }
-                else
-                {
-                    var f = Foci[index + 1];
-                    //CombatText.NewText(Player.Hitbox, ItemRarity.GetColor(f.Item.rare), f.DisplayName.GetDefault());
-                    f.Toggle(Player);
-                }
-            }
-            else
-            {
-                var f = Foci.First();
-                //CombatText.NewText(Player.Hitbox, ItemRarity.GetColor(f.Item.rare), f.DisplayName.GetDefault());
-                f.Toggle(Player);
-            }
-        }
-        public BaseFoci GetCurrentFocus()
-        {
-            if (!Focus.HasValue) return null;
-
-            for (int i = Main.InventoryItemSlotsStart; i < 9; i++)
-            {
-                if (Player.inventory[i].ModItem is BaseFoci foci)
-                {
-                    if (foci.Type == Focus.Value.ItemType) return foci;
-                }
-            }
-            return null;
-        }
-        public void AddMana(ManaColor Type, float amount)
-        {
-            if (FociFramesLeft > 0) return;
-
-            switch(Type)
-            {
-                case ManaColor.Black:
-                    BlackMana += amount; break;
-                case ManaColor.White:
-                    WhiteMana += amount; break;
-                default:
-                    BlackMana += amount;
-                    WhiteMana += amount;
-                    break;
-            }
-            LastManaGain = DateTime.Now;
-        }
-        private void HandleManaDecline()
-        {
-            if (LastManaGain.HasValue)
-            {
-                if((DateTime.Now - LastManaGain.Value).Seconds >= 5)
-                {
-                    AddMana(ManaColor.Red, -0.01f);
-                }
-            }
-        }
-        private void HandleComboReset()
-        {
-            if (LastMeleeSwing.HasValue)
-            {
-                if ((DateTime.Now - LastMeleeSwing.Value).Seconds > 3)
-                {
-                    ComboState = 0;
-                    LastMeleeSwing = null;
-                }
-            }
-        }
-        public override void PostUpdateMiscEffects()
-        {
-            if (AttackFramesLeft > 0) AttackFramesLeft--;
-            if (FociFramesLeft > 0) FociFramesLeft--;
-
-            if (AttackFramesLeft < 0) AttackFramesLeft = 0;
-            if (FociFramesLeft < 0) FociFramesLeft = 0;
-
-            HandleManaDecline();
-
-            HandleComboReset();
-        }
         public override void ResetEffects()
         {
-            if (!IsMageStance || !Rapier.HasValue)
-            {
-                ActiveSpell = null;
-            }
-
             if (!Rapier.HasValue)
             {
-                RapierID = null;
+                IsCasting = false;
+                RapierBehavior = Behavior.Idle;
+                CastingTimer = 0;
+                BehaviorFrames = 0;
             }
-
-            if (!Focus.HasValue)
+            else if (Rapier.HasValue)
             {
-                FocusID = null;
+                if (RapierBehavior == Behavior.Casting || IsCasting)
+                {
+                    if ((DateTime.Now - LastRapierUsage[Rapier.Value.FullName]).TotalSeconds > 0.5)
+                    {
+                        IsCasting = false;
+                        RapierBehavior = Behavior.Idle;
+                        CastingTimer = 0;
+                        BehaviorFrames = 0;
+                    }
+                }
             }
-
-            Rapier = null;
-
-            Focus = null;
-
-            FrameType = null;
             
+            LungeTechnique = false;
             MaxMana = 3;
-            ManaGainRate = new(1, 1, 0, 0.25f);
+            ManaGainRate = new(1, 1);
             CastingSpeed = new(1, 1);
 
-        FrameOnCast = null;
-            FrameOnHitNPC = null;
-            FrameOnHitPlayer = null;
-
-            FocusOnCast = null;
-            FocusOnHitNPC = null;
-            FocusOnHitPlayer = null;
         }
 
-        
+        public void ProcessOnCast(SpellData spell)
+        {
+            foreach (OnCastSpell e in Events.Where(x=> x is OnCastSpell))
+            {
+                e.OnCast(Player, spell);
+            }
+        }
+        public void ProcessOnHitWithSpell(Projectile projectile, NPC target, NPC.HitInfo hitInfo, int damage)
+        {
+            foreach (OnHitWithSpell e in Events.Where(x => x is OnHitWithSpell))
+            {
+                e.OnHitNPC(projectile, target, hitInfo, damage);
+            }
+        }
+        public void ProcessOnHitWithSpell(Projectile projectile, Player target, Player.HurtInfo hitInfo, int damage)
+        {
+            foreach (OnHitWithSpell e in Events.Where(x => x is OnHitWithSpell))
+            {
+                e.OnHitPlayer(projectile, target, hitInfo, damage);
+            }
+        }
+        public void ProcessOnHitWithRapier(Projectile projectile, NPC target, NPC.HitInfo hitInfo, int damage)
+        {
+            foreach (OnHitWithRapier e in Events.Where(x=>x is OnHitWithRapier))
+            {
+                e.OnHitNPC(projectile, target, hitInfo, damage);
+            }
+        }
+        public void ProcessOnHitWithRapier(Projectile projectile, Player target, Player.HurtInfo hitInfo, int damage)
+        {
+            foreach (OnHitWithRapier e in Events.Where(x => x is OnHitWithRapier))
+            {
+                e.OnHitPlayer(projectile, target, hitInfo, damage);
+            }
+        }
     }
 
     public enum ManaColor

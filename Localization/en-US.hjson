@@ -7,7 +7,7 @@ Mods: {
 		Tooltips: {
 			RightClick: 
 			'''
-			Right-Click to switch stances.
+			Right-Click to Cast {0}.
 			'''
 			MeleeStance: 
 			'''

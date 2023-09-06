@@ -21,18 +21,18 @@ using vermage.Projectiles.Spells;
 using vermage.Projectiles.Swings.TheStinger;
 using vermage.Systems.Utilities;
 using vermage.Items.Abstracts;
-using vermage.Projectiles.Guards;
 using vermage.Projectiles.Foci;
+using vermage.Projectiles.Guards;
 
 namespace vermage.Items.Rapiers
 {
-    public class TheStinger : BaseRapier
+    public class FleshPiercer : BaseRapier
     {
         public override void SetDefaults()
         {
 
-            Item.width = 70;
-            Item.height = 70;
+            Item.width = 50;
+            Item.height = 58;
             Item.maxStack = 1;
             Item.value = Item.sellPrice(0, 0, 0, 50);
             Item.rare = ItemRarityID.Orange;
@@ -40,11 +40,10 @@ namespace vermage.Items.Rapiers
             Item.crit = 7;
             Item.damage = 24;
             Item.knockBack = 4f;
-            Item.useTime = 32;
-            Item.useAnimation = 32;
+            Item.useTime = 64;
+            Item.useAnimation = 64;
 
-            RapierProjectile = ProjectileType<TheStingerProjectile>();
-            GuardProjectile = ProjectileType<TheStingerGuardProjectile>();
+            RapierProjectile = ProjectileType<FleshPiercerProjectile>();
             FocusProjectile = ProjectileType<ExampleFocusProjectile>();
 
             base.SetDefaults();
