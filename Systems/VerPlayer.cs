@@ -99,6 +99,18 @@ namespace vermage.Systems
                 else return null;
             }
         }
+        public bool HasSpellUnloked(string ID)
+        {
+            if (UnlockedSpells.TryGetValue(ID, out bool value)) return value;
+            else return false;
+        }
+        public void UnlockSpell(string id)
+        {
+            if (UnlockedSpells.ContainsKey(id))
+            {
+                UnlockedSpells[id] = true;
+            }
+        }
 
 
         public StatModifier ManaGainRate = new(1f, 1f);
@@ -180,7 +192,7 @@ namespace vermage.Systems
         }
         public void HandleCasting()
         {
-            if (Player.ItemTimeIsZero && !CastingSpell.HasValue && GetCurrentSpell().HasValue && RapierBehavior == Behavior.Idle  && MouseRightJustPressed()) // If MouseRight was JUST pressed and the player is not casting
+            if (Player.ItemTimeIsZero && !CastingSpell.HasValue && GetCurrentSpell().HasValue && RapierBehavior == Behavior.Idle && MouseRightCurrent()) // If MouseRight was JUST pressed and the player is not casting
             {
                 WasCasting = true;
                 RapierBehavior = Behavior.Casting;
@@ -191,9 +203,10 @@ namespace vermage.Systems
             }
             else if (CastingSpell.HasValue && MouseRightCurrent()) // If the player is casting && mouseRight is currently being held
             {
+                int cstingFrames = CastingSpell.Value.GetCastingFrames(Player);
                 // If the timer is equal or higher than the casting frames. 
                 // Then cast the spell.
-                if (CastingTimer >= CastingSpell.Value.GetCastingFrames(Player)) 
+                if (CastingTimer >= cstingFrames) 
                 {
                     CastSpell(Rapier, CastingSpell.Value);
                     Player.SetItemTime(10); // IMPORTANT! This adds a 10-frame cooldown between repeated castings of spells.
@@ -241,7 +254,7 @@ namespace vermage.Systems
                     // If the user is current casting a spell
                     // AND it's been 1/2 a second since the LastRapierUsage has been update
                     // Then clear all spell data and return to idle behavior
-                    if (CastingSpell.HasValue && (DateTime.Now - LastRapierUsage.Value).TotalSeconds > 0.5f)
+                    if ((RapierBehavior == Behavior.Casting || CastingSpell.HasValue) && (DateTime.Now - LastRapierUsage.Value).TotalSeconds > 0.5f)
                     {
                         CastingSpell = null;
                         RapierBehavior = Behavior.Idle;
@@ -274,14 +287,18 @@ namespace vermage.Systems
 
         }
 
+
+
         private bool MouseRightJustPressed() => Main.mouseRight && Main.mouseRightRelease;
         private bool MouseRightCurrent() => Main.mouseRight && !Main.mouseRightRelease;
         public void CastSpell(BaseRapier rapier, SpellData spell)
         {
             int damage = (int)Player.GetTotalDamage<VermilionDamageClass>().ApplyTo(rapier.Item.damage);
             float knockback = Player.GetTotalKnockback<VermilionDamageClass>().ApplyTo(rapier.Item.knockBack);
+            Vector2 direction = Player.DirectionTo(Main.MouseWorld);
+            direction.Normalize();
 
-            Projectile.NewProjectileDirect(Player.GetSource_ItemUse(rapier.Item), FocusPosition ?? Player.Center, spell.Velocity, spell.ProjectileType, damage, knockback, Player.whoAmI);
+            Projectile.NewProjectileDirect(Player.GetSource_ItemUse(rapier.Item), FocusPosition ?? Player.Center, direction * spell.Velocity, spell.ProjectileType, damage, knockback, Player.whoAmI);
             ProcessOnCast(spell);
         }
         public void ProcessOnCast(SpellData spell)

@@ -13,8 +13,8 @@ namespace vermage.Projectiles.Abstracts
 {
     public abstract class BaseSpellProjectile : ModProjectile
     {
-        private Player Owner;
-        private VerPlayer VerOwner { get { return Owner.GetModPlayer<VerPlayer>(); } }  
+        private Player Owner { get { return Main.player[Projectile.owner]; } }
+        private VerPlayer VerOwner { get { return Owner?.GetModPlayer<VerPlayer>(); } }  
         private ManaColor Color { get { return (ManaColor)Projectile.ai[0]; } }
 
         public override void SetDefaults()

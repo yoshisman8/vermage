@@ -32,7 +32,7 @@ namespace vermage.Projectiles.Rapiers
         }
         public int TotalTime
         {
-            get => (int)Projectile.ai[1];
+            get => (int)(Projectile.ai[1] * (1 + Projectile.extraUpdates));
             set => Projectile.ai[1] = value;
         }
         public int Timer
@@ -76,7 +76,7 @@ namespace vermage.Projectiles.Rapiers
             {
                 case Behavior.Swing:
                     Projectile.timeLeft = TotalTime;
-                    StartPosition = Owner.RotatedRelativePoint(Owner.MountedCenter).DirectionTo(Main.MouseWorld);
+                    StartPosition = Projectile.Center;
                     Projectile.scale = 1.2f;
                     break;
 
@@ -180,6 +180,7 @@ namespace vermage.Projectiles.Rapiers
                 new Vector2(Projectile.Center.X, Projectile.Center.Y + DrawOriginOffsetY + 20)
                 ).ToRotation() + MathHelper.PiOver2);
 
+            Owner.direction = Math.Sign(Main.MouseWorld.X - Owner.Center.X);
 
             if (Owner.ownedProjectileCounts[VerOwner.RapierData.Value.GuardProjectile] < 1 && VerOwner.RapierData.Value.GuardProjectile != -1)
             {
@@ -237,7 +238,7 @@ namespace vermage.Projectiles.Rapiers
         #region SwingAI
         private void SwingAI()
         {
-            if (Timer > TotalTime * (1 + Projectile.extraUpdates))
+            if (Timer > TotalTime)
             {
                 Projectile.Kill();
                 return;
@@ -280,7 +281,7 @@ namespace vermage.Projectiles.Rapiers
         #region ThrustAI
         private void ThrustAI()
         {
-            if (Timer > TotalTime * (1 + Projectile.extraUpdates))
+            if (Timer > TotalTime)
             {
                 Projectile.Kill();
                 return;
@@ -320,7 +321,7 @@ namespace vermage.Projectiles.Rapiers
 
         private float AnimationPercent()
         {
-            return Utils.Clamp((Timer / (TotalTime * (1 + Projectile.extraUpdates))), 0f, 1f);
+            return Utils.Clamp(Timer/TotalTime, 0f, 1f);
         }
         public override bool ShouldUpdatePosition() => false;
         public override bool? CanCutTiles() => Behavior != Behavior.Idle;

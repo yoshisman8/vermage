@@ -23,6 +23,7 @@ namespace vermage.Items.Rapiers
     {
         public override void SetDefaults()
         {
+            base.SetDefaults();
 
             Item.width = 70;
             Item.height = 70;
@@ -40,7 +41,7 @@ namespace vermage.Items.Rapiers
             GuardProjectile = ProjectileType<HellstoneRapierGuardProjectile>();
             FocusProjectile = ProjectileType<ExampleFocusProjectile>();
 
-            base.SetDefaults();
+            Item.shoot = RapierProjectile;
         }
 
         public override void AddRecipes()

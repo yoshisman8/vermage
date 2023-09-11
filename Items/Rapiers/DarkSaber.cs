@@ -26,6 +26,7 @@ namespace vermage.Items.Rapiers
     {
         public override void SetDefaults()
         {
+            base.SetDefaults();
 
             Item.width = 50;
             Item.height = 50;
@@ -41,8 +42,7 @@ namespace vermage.Items.Rapiers
 
             RapierProjectile = ProjectileType<DarkSaberProjectile>();
             FocusProjectile = ProjectileType<ExampleFocusProjectile>();
-
-            base.SetDefaults();
+            Item.shoot = RapierProjectile;
         }
 
 

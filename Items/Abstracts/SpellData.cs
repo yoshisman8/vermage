@@ -29,6 +29,6 @@ namespace vermage.Items.Abstracts
         public StatModifier Knockback { get; set; }
         public float CastingTime { get; set; }
 
-        public int GetCastingFrames(Player player) => (int)Utils.Clamp(player.GetModPlayer<VerPlayer>().CastingSpeed.ApplyTo(CastingTime), 1f, 9f);
+        public int GetCastingFrames(Player player) => (int)player.GetModPlayer<VerPlayer>().CastingSpeed.ApplyTo(CastingTime);
     }
 }

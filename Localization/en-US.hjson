@@ -20,6 +20,7 @@ Mods: {
 			}
 		}
 
+		Messages.UnlockMessage: You have unlocked the spell {0}!
 		DamageClasses.VermilionDamageClass.DisplayName: Vermilion Damage
 
 		Tooltips: {
@@ -31,6 +32,8 @@ Mods: {
 		Keybinds: {
 			"Activate Focus.DisplayName": Activate  Focus
 			"Quick Focus Swap.DisplayName": Quick  Focus  Swap
+			"Toggle Spellbook.DisplayName": Toggle  Spellbook
+			"Swap Spells.DisplayName": Swap  Spells
 		}
 
 		Buffs: {

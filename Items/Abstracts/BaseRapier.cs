@@ -39,8 +39,6 @@ namespace vermage.Items.Abstracts
         public override void SetDefaults()
         {
             Item.DamageType = GetInstance<VermilionDamageClass>();
-            Item.useTime = 1;
-            Item.useAnimation = Item.useTime;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = null;
             Item.noUseGraphic = true;
@@ -56,6 +54,14 @@ namespace vermage.Items.Abstracts
             base.HoldItem(player);
 
             VerPlayer vplayer = player.GetModPlayer<VerPlayer>();
+
+            if (!vplayer.HasSpellUnloked("vermage/Jolt"))
+            {
+                vplayer.UnlockSpell("vermage/Jolt");
+                vplayer.Slot1 = "vermage/Jolt";
+                vplayer.SelectedSlot = 1;
+                Main.NewText(Language.GetTextValue("Mods.vermage.Messages.UnlockMessage", vermage.Spells["vermage/Jolt"].Name.Value));
+            }
 
             if (player.ownedProjectileCounts[RapierProjectile] < 1 && (vplayer.RapierBehavior == Behavior.Idle || vplayer.RapierBehavior == Behavior.Casting))
             {
