@@ -21,8 +21,8 @@ namespace vermage
         {
             base.Load();
             Instance = this;
-            VerPlayer.ToggleSpellbook = KeybindLoader.RegisterKeybind(this, "Activate Focus", Microsoft.Xna.Framework.Input.Keys.Q);
-            VerPlayer.SwapSpells = KeybindLoader.RegisterKeybind(this, "Quick Focus Swap", Microsoft.Xna.Framework.Input.Keys.F);
+            VerPlayer.ToggleSpellbook = KeybindLoader.RegisterKeybind(this, "Toggle Spellbook", Microsoft.Xna.Framework.Input.Keys.P);
+            VerPlayer.SwapSpells = KeybindLoader.RegisterKeybind(this, "Swap Spells", Microsoft.Xna.Framework.Input.Keys.F);
 
             if (ModLoader.TryGetMod("ThoriumMod", out Mod thoriumMod))
             {

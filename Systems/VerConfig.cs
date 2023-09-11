@@ -15,22 +15,23 @@ namespace vermage.Systems
 
         public static VerConfig Instance;
 
-        [Header("Casting Bar Position")]
-        [Label("Horizontal Offset")]
+        [Header("$Mods.vermage.Configs.Headers.CastingBar")]
+        [LabelKey("$Mods.vermage.Configs.CastBarX.DisplayName")]
+        [TooltipKey("$Mods.vermage.Configs.CastBarX.Tooltip")]
         [DefaultValue(50.104603f)]
         [Range(0f, 100f)]
-        [Tooltip("The horizontal offset for the casting bar.")]
         public float CastBarX { get; set; }
 
-        [Label("Vertical Offset")]
+
+        [LabelKey("$Mods.vermage.Configs.CastBarY.DisplayName")]
+        [TooltipKey("$Mods.vermage.Configs.CastBarY.Tooltip")]
         [Range(0f, 100f)]
         [DefaultValue(54.112984f)]
-        [Tooltip("The vertical offset for the casting bar.")]
         public float CastBarY { get; set; }
 
-        [Label("Lock Casting Bar Position")]
+        [LabelKey("$Mods.vermage.Configs.LockCastingBar.DisplayName")]
+        [TooltipKey("$Mods.vermage.Configs.LockCastingBar.Tooltip")]
         [DefaultValue(true)]
-        [Tooltip("Prevent the moving of the Casting Bar.")]
         public bool LockCastingBar { get; set; }
 
         public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref string message)
