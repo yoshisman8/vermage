@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria;
 
-namespace vermage.Systems
+namespace vermage.Systems.Utilities
 {
     public static class VerUtils
     {
@@ -244,6 +244,6 @@ namespace vermage.Systems
                 return 1 - InBounce((1 - t) * 2) / 2;
             }
         }
-        
+
     }
 }

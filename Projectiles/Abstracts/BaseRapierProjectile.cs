@@ -19,6 +19,7 @@ using vermage.Systems.Handlers;
 using Terraria.DataStructures;
 using System.Drawing;
 using vermage.Items.Abstracts;
+using vermage.Systems.Utilities;
 
 namespace vermage.Projectiles.Rapiers
 {
@@ -29,10 +30,15 @@ namespace vermage.Projectiles.Rapiers
             get => (Behavior)Projectile.ai[0];
             set => Projectile.ai[0] = (int)value;
         }
-        public int Timer
+        public int TotalTime
         {
             get => (int)Projectile.ai[1];
             set => Projectile.ai[1] = value;
+        }
+        public int Timer
+        {
+            get => (int)Projectile.ai[2];
+            set => Projectile.ai[2] = value;
         }
 
         private Player Owner;
@@ -69,11 +75,13 @@ namespace vermage.Projectiles.Rapiers
             switch (Behavior)
             {
                 case Behavior.Swing:
+                    Projectile.timeLeft = TotalTime;
                     StartPosition = Owner.RotatedRelativePoint(Owner.MountedCenter).DirectionTo(Main.MouseWorld);
                     Projectile.scale = 1.2f;
                     break;
 
                 case Behavior.Thrust:
+                    Projectile.timeLeft = TotalTime;
                     StartPosition = Projectile.Center;
                     MousePosition = Main.MouseWorld;
                     break;
@@ -87,12 +95,12 @@ namespace vermage.Projectiles.Rapiers
 
         public override void AI()
         {
-            if (!VerOwner.Rapier.HasValue)
+            if (!VerOwner.RapierData.HasValue)
             {
                 Projectile.Kill();
                 return;
             }
-            if (VerOwner.Rapier.Value.RapierProjectile != Type)
+            if (VerOwner.RapierData.Value.RapierProjectile != Type)
             {
                 Projectile.Kill();
                 return;
@@ -147,7 +155,7 @@ namespace vermage.Projectiles.Rapiers
 
             Vector2 PivotCenter = playerCenter + direction * Projectile.Size.X * 0.12f + direction;
 
-            if (VerOwner.IsCasting || VerOwner.WasCasting)
+            if (VerOwner.CastingSpell.HasValue || VerOwner.WasCasting)
             {
                 Projectile.Center = PivotCenter + direction * Projectile.Size.X * 0.01f;
 
@@ -173,9 +181,9 @@ namespace vermage.Projectiles.Rapiers
                 ).ToRotation() + MathHelper.PiOver2);
 
 
-            if (Owner.ownedProjectileCounts[VerOwner.Rapier.Value.GuardProjectile] < 1 && VerOwner.Rapier.Value.GuardProjectile != -1)
+            if (Owner.ownedProjectileCounts[VerOwner.RapierData.Value.GuardProjectile] < 1 && VerOwner.RapierData.Value.GuardProjectile != -1)
             {
-                Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, new Vector2(0), VerOwner.Rapier.Value.GuardProjectile, 0, 0, Owner.whoAmI, Projectile.whoAmI);
+                Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, new Vector2(0), VerOwner.RapierData.Value.GuardProjectile, 0, 0, Owner.whoAmI, Projectile.whoAmI);
             }
         }
         private void UpdateIdle()
@@ -229,7 +237,7 @@ namespace vermage.Projectiles.Rapiers
         #region SwingAI
         private void SwingAI()
         {
-            if (Timer > VerOwner.BehaviorFrames * (1 + Projectile.extraUpdates))
+            if (Timer > TotalTime * (1 + Projectile.extraUpdates))
             {
                 Projectile.Kill();
                 return;
@@ -272,7 +280,7 @@ namespace vermage.Projectiles.Rapiers
         #region ThrustAI
         private void ThrustAI()
         {
-            if (Timer > VerOwner.BehaviorFrames * (1 + Projectile.extraUpdates))
+            if (Timer > TotalTime * (1 + Projectile.extraUpdates))
             {
                 Projectile.Kill();
                 return;
@@ -312,7 +320,7 @@ namespace vermage.Projectiles.Rapiers
 
         private float AnimationPercent()
         {
-            return Utils.Clamp((Timer / (VerOwner.BehaviorFrames * (1 + Projectile.extraUpdates))), 0f, 1f);
+            return Utils.Clamp((Timer / (TotalTime * (1 + Projectile.extraUpdates))), 0f, 1f);
         }
         public override bool ShouldUpdatePosition() => false;
         public override bool? CanCutTiles() => Behavior != Behavior.Idle;

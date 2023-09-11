@@ -23,7 +23,7 @@ namespace vermage.Buffs.Spells
         public Vector2 Velocity { get; set; }
         public StatModifier Damage { get; set; }
         public StatModifier Knockback { get; set; }
-
+        public string SpellSoundEffectPath { get; set; }
         public SpellData SpellData => new SpellData()
         {
             Color = Color,
@@ -36,7 +36,9 @@ namespace vermage.Buffs.Spells
             Tier = Tier,
             Name = DisplayName,
             Tooltip = Description,
-            CastingTime = CastingTime
+            CastingTime = CastingTime,
+            IconPath = this.Texture,
+            SpellSFXPath = SpellSoundEffectPath
         };
 
         public override void SetStaticDefaults()
@@ -53,21 +55,5 @@ namespace vermage.Buffs.Spells
         /// Used to actually configure the aspects of the spell.
         /// </summary>
         public abstract void ConfigureSpell();
-
-        public virtual void Cast(Player source, Vector2 Position, BaseRapier Rapier, int damage, float knockback)
-        {
-            Projectile.NewProjectileDirect(source.GetSource_ItemUse(Rapier.Item), Position, Velocity, ProjectileType, (int)Damage.ApplyTo(damage), Knockback.ApplyTo(knockback));
-            source.GetModPlayer<VerPlayer>().ProcessOnCast(SpellData);
-        }
-        public override void Update(Player player, ref int buffIndex)
-        {
-            VerPlayer verPlayer = player.GetModPlayer<VerPlayer>();
-
-            if(verPlayer.Slot1 != FullName && verPlayer.Slot2 != FullName)
-            {
-                player.DelBuff(buffIndex);
-                return;
-            }
-        }
     }
 }

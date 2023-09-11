@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Terraria;
 using Terraria.GameContent.UI.Elements;
 
 namespace vermage.UI.Components
@@ -20,16 +21,16 @@ namespace vermage.UI.Components
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            if (CastingGaugeUIState.CastLeft > 0)
+            if (CastingGaugeUIState.CastingTime - CastingGaugeUIState.CastingTime > 0)
             {
-                seconds = (float)CastingGaugeUIState.CastLeft / 60f;
+                seconds = (float)(CastingGaugeUIState.CastingTime - CastingGaugeUIState.CastingTime) / Main.frameRate;
 
                 SetText("CASTING " + seconds.ToString("00.00"));
             }
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (CastingGaugeUIState.CastLeft > 0)
+            if (CastingGaugeUIState.CastingTime - CastingGaugeUIState.CastingTime > 0)
             {
                 base.Draw(spriteBatch);
             }

@@ -21,8 +21,7 @@ namespace vermage.UI.Components
         }
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            int progress = (CastingGaugeUIState.TotalCast - CastingGaugeUIState.CastLeft);
-            float Quotient = (float)progress / (float)CastingGaugeUIState.TotalCast;
+            float Quotient = (float)CastingGaugeUIState.CastingProgress / (float)CastingGaugeUIState.CastingTime;
 
             float clamp = Utils.Clamp(Quotient, 0f, 1f);
 

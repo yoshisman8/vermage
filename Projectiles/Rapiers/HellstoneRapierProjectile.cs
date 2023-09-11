@@ -25,7 +25,6 @@ namespace vermage.Projectiles.Rapiers
         {
             base.SetDefaults();
             Projectile.Size = new Vector2(70);
-            GuardType = ModContent.ProjectileType<HellstoneRapierGuardProjectile>();
         }
 
         public override void AI()

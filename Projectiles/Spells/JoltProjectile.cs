@@ -9,7 +9,6 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using vermage.Projectiles.Abstracts;
-using vermage.Systems;
 using vermage.Systems.Handlers;
 using vermage.Systems.Utilities;
 

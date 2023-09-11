@@ -25,7 +25,6 @@ namespace vermage.Projectiles.Rapiers
         {
             base.SetDefaults();
             Projectile.Size = new Vector2(50);
-            GuardType = ModContent.ProjectileType<TheStingerGuardProjectile>();
         }
 
     }

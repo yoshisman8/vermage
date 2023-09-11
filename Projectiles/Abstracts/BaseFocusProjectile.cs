@@ -21,10 +21,6 @@ namespace vermage.Projectiles.Abstracts
             get { return (int)Projectile.ai[1]; }
             set { Projectile.ai[1] = value; }
         }
-        int BuffId
-        {
-            get { return (int)Projectile.ai[0]; }
-        }
         private Player Owner { get { return Main.player[Projectile.owner]; } }
         private VerPlayer VerOwner { get { return Owner.GetModPlayer<VerPlayer>(); } }
         public override void SetDefaults()
@@ -49,13 +45,13 @@ namespace vermage.Projectiles.Abstracts
         {
             Projectile.scale = 0.7f;
 
-            if (!VerOwner.Rapier.HasValue)
+            if (!VerOwner.RapierData.HasValue)
             {
                 Projectile.Kill();
                 return;
             }
 
-            if (VerOwner.Rapier.Value.FocusProjectile != Type)
+            if (VerOwner.RapierData.Value.FocusProjectile != Type)
             {
                 Projectile.Kill();
                 return;
@@ -70,7 +66,7 @@ namespace vermage.Projectiles.Abstracts
             Projectile.timeLeft = 10;
             Projectile.alpha -= 10;
 
-            if (VerOwner.IsCasting)
+            if (VerOwner.CastingSpell.HasValue)
             {
                 UpdateAttack();
             }

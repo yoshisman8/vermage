@@ -10,6 +10,7 @@ using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
+using vermage.Items.Abstracts;
 using vermage.Systems;
 using vermage.Systems.Utilities;
 
@@ -38,14 +39,12 @@ namespace vermage.UI.Components
                     {
                         VerPlayer vPlayer = player.GetModPlayer<VerPlayer>();
 
-                        SpellData? data = vPlayer.ActiveSpell;
+                        if (!vPlayer.CastingSpell.HasValue) return;
 
-                        if (!data.HasValue) return;
-
-                        if (data.Value.IconPath != Cache)
+                        if (vPlayer.CastingSpell.Value.IconPath != Cache)
                         {
-                            SetImage(ModContent.Request<Texture2D>(data.Value.IconPath));
-                            Cache = data.Value.IconPath;
+                            SetImage(ModContent.Request<Texture2D>(vPlayer.CastingSpell.Value.IconPath));
+                            Cache = vPlayer.CastingSpell.Value.IconPath;
                         }
                     }
                 }

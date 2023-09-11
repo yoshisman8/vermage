@@ -18,6 +18,8 @@ namespace vermage.Items.Abstracts
         public LocalizedText Name { get; set; }
         public LocalizedText Tooltip { get; set; }
         public LocalizedText UnlockHint { get; set; }
+        public string IconPath { get; set; }
+        public string SpellSFXPath { get; set; }
         public ManaColor Color { get; set; }
         public int Tier { get; set; }
         public int ProjectileType { get; set; }
@@ -26,5 +28,7 @@ namespace vermage.Items.Abstracts
         public StatModifier Damage { get; set; }
         public StatModifier Knockback { get; set; }
         public float CastingTime { get; set; }
+
+        public int GetCastingFrames(Player player) => (int)Utils.Clamp(player.GetModPlayer<VerPlayer>().CastingSpeed.ApplyTo(CastingTime), 1f, 9f);
     }
 }

@@ -35,14 +35,12 @@ namespace vermage.UI.Components
                     {
                         VerPlayer vPlayer = player.GetModPlayer<VerPlayer>();
 
-                        SpellData? data = vPlayer.ActiveSpell;
+                        if (!vPlayer.CastingSpell.HasValue) return;
 
-                        if (!data.HasValue) return;
-
-                        if (data.Value.Name != Cache)
+                        if (vPlayer.CastingSpell.Value.Name.Value != Cache)
                         {
-                            SetText(data.Value.Name);
-                            Cache = data.Value.Name;
+                            SetText(vPlayer.CastingSpell.Value.Name.Value);
+                            Cache = vPlayer.CastingSpell.Value.Name.Value;
                         }
                     }
                 }

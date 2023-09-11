@@ -53,13 +53,13 @@ namespace vermage.Projectiles.Guards
                 return;
             }
 
-            if (!player.Rapier.HasValue)
+            if (!player.RapierData.HasValue)
             {
                 Projectile.Kill();
                 return;
             }
 
-            if (player.Rapier.Value.GuardProjectile != Type)
+            if (player.RapierData.Value.GuardProjectile != Type)
             {
                 Projectile.Kill();
                 return;
@@ -74,7 +74,7 @@ namespace vermage.Projectiles.Guards
 
             ModProjectile rapier = Main.projectile[MasterWhoAmI].ModProjectile;
 
-            if (player.Rapier.Value.RapierProjectile != rapier.Type)
+            if (player.RapierData.Value.RapierProjectile != rapier.Type)
             {
                 Projectile.Kill();
                 return;

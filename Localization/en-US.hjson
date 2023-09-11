@@ -9,14 +9,6 @@ Mods: {
 			'''
 			Right-Click to Cast {0}.
 			'''
-			MeleeStance: 
-			'''
-			[c/C61313:~~Dueling Stance~~]
-			'''
-			MageStance: 
-			'''
-			[c/C61313:~~Casting Stance~~]
-			'''
 			Inheritance: 
 			'''
 			Inherits from [c/C4700F:Melee] and [c/C1197B:Magic] Damage.

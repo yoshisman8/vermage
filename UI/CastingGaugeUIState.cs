@@ -20,8 +20,8 @@ namespace vermage.UI
     public class CastingGaugeUIState : UIState
     {
         public static Gradient Color;
-        public static int TotalCast;
-        public static int CastLeft;
+        public static int CastingTime;
+        public static int CastingProgress;
 
         private CastingGaugeContainer Container;
         private UIImage CastingGauge;
@@ -91,14 +91,14 @@ namespace vermage.UI
                     {
                         VerPlayer vPlayer = player.GetModPlayer<VerPlayer>();
 
-                        if (vPlayer.IsCasting)
+                        if (vPlayer.CastingSpell.HasValue)
                         {
-                            TotalCast = vPlayer.CastFrames.Total;
-                            CastLeft = vPlayer.CastFrames.Left;
+                            CastingTime = vPlayer.CastingSpell.Value.GetCastingFrames(player);
+                            CastingProgress = vPlayer.CastingTimer;
                         }
                         else
                         {
-                            TotalCast = CastLeft = 0;
+                            CastingTime = CastingProgress = 0;
                         }
                     }
                 }
@@ -106,7 +106,7 @@ namespace vermage.UI
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (CastLeft > 0)
+            if (CastingTime > 0)
             {
                 base.Draw(spriteBatch);
             }

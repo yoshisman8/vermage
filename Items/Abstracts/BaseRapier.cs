@@ -27,20 +27,15 @@ namespace vermage.Items.Abstracts
     {
         public RapierData RapierData => new RapierData()
         {
-            FullName = FullName,
-            ItemType = Type,
-            UseTime = Item.useTime,
-            Damage = Item.damage,
-            Knockback = Item.knockBack,
             RapierProjectile = RapierProjectile,
-            FocusProjectile = FocusProjectile
+            FocusProjectile = FocusProjectile,
+            GuardProjectile = GuardProjectile
         };
 
         public int RapierProjectile = -1;
         public int FocusProjectile = -1;
         public int GuardProjectile = -1;
 
-        private int Rapier = -1;
         public override void SetDefaults()
         {
             Item.DamageType = GetInstance<VermilionDamageClass>();
@@ -62,33 +57,9 @@ namespace vermage.Items.Abstracts
 
             VerPlayer vplayer = player.GetModPlayer<VerPlayer>();
 
-            if (vplayer.RapierBehavior != Behavior.Idle && vplayer.LastRapierUsage.TryGetValue(FullName, out var date))
+            if (player.ownedProjectileCounts[RapierProjectile] < 1 && (vplayer.RapierBehavior == Behavior.Idle || vplayer.RapierBehavior == Behavior.Casting))
             {
-                if ((DateTime.Now - date).TotalSeconds > 1)
-                {
-                    vplayer.RapierBehavior = Behavior.Idle;
-                    vplayer.BehaviorFrames = 0;
-                }
-            }
-            else
-            {
-                vplayer.LastRapierUsage.Add(FullName, DateTime.Now);
-            }
-
-            if (vplayer.RapierBehavior == Behavior.Idle || vplayer.RapierBehavior == Behavior.Casting)
-            {
-                Item.useTime = 1;
-                Item.useAnimation = 1;
-            }
-            else
-            {
-                Item.useAnimation = RapierData.UseTime;
-                Item.useTime = (int)(RapierData.UseTime * player.GetAttackSpeed<MeleeDamageClass>());
-            }
-
-            if (player.ownedProjectileCounts[RapierProjectile] < 1 && vplayer.RapierBehavior == Behavior.Idle)
-            {
-                Rapier = Projectile.NewProjectileDirect(player.GetSource_ItemUse(player.HeldItem), player.position, new Vector2(0), RapierProjectile, Item.damage, Item.knockBack, player.whoAmI, (int)Behavior.Idle).whoAmI;
+                Projectile.NewProjectileDirect(player.GetSource_ItemUse(player.HeldItem), player.position, new Vector2(0), RapierProjectile, Item.damage, Item.knockBack, player.whoAmI, (int)Behavior.Idle);
             }
             if (player.ownedProjectileCounts[FocusProjectile] < 1)
             {
@@ -116,74 +87,49 @@ namespace vermage.Items.Abstracts
                 tooltips.Add(new TooltipLine(vermage.Instance, "Tooltip0", Language.GetTextValue("Mods.vermage.Tooltips.Inheritance")));
             }
         }
-        public override float UseSpeedMultiplier(Player player) => 1;
-        public override bool AltFunctionUse(Player player) => true;
+        public override float UseSpeedMultiplier(Player player) => player.GetAttackSpeed<MeleeDamageClass>();
+        public override bool CanUseItem(Player player) => player.GetModPlayer<VerPlayer>().RapierBehavior != Behavior.Casting;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             VerPlayer verPlayer = player.GetModPlayer<VerPlayer>();
 
-            if (player.altFunctionUse == 2)
+            verPlayer.CastingSpell = null;
+            verPlayer.WasCasting = false;
+            if (verPlayer.RapierBehavior == Behavior.Idle || verPlayer.RapierBehavior == Behavior.Thrust)
             {
-                var spell = verPlayer.GetCurrentSpell();
-                if (spell.HasValue && !verPlayer.IsCasting)
+                if (verPlayer.GetCombinedMana() > 0)
                 {
-                    verPlayer.IsCasting = true;
-                    verPlayer.WasCasting = true;
-                    verPlayer.RapierBehavior = Behavior.Casting;
-                    verPlayer.BehaviorFrames = (int)verPlayer.CastingSpeed.ApplyTo(spell.Value.CastingTime);
+                    verPlayer.RapierBehavior = Behavior.Swing;
+
+                    verPlayer.AddMana(ManaColor.Red, -1);
+
+                    Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, (int)Behavior.EnchantedSwing, Item.useAnimation);
                 }
-                else if (spell.HasValue && verPlayer.IsCasting && verPlayer.CastingTimer == verPlayer.BehaviorFrames)
+                else
                 {
-                    Projectile.NewProjectileDirect(source, verPlayer.FocusPosition ?? position, spell.Value.Velocity, spell.Value.ProjectileType, (int)spell.Value.Damage.ApplyTo(damage), spell.Value.Knockback.ApplyTo(knockback), (int)spell.Value.Color);
+                    verPlayer.RapierBehavior = Behavior.Swing;
+
+                    Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, player.whoAmI, (int)Behavior.Swing, Item.useAnimation);
                 }
             }
-            else
+            else if (verPlayer.RapierBehavior == Behavior.Swing)
             {
-                verPlayer.IsCasting = false;
-                verPlayer.WasCasting = false;
-                if (verPlayer.RapierBehavior == Behavior.Idle || verPlayer.RapierBehavior == Behavior.Thrust)
+                if (verPlayer.GetCombinedMana() > 0)
                 {
-                    if (verPlayer.GetCombinedMana() > 0)
-                    {
-                        verPlayer.RapierBehavior = Behavior.Swing;
-                        verPlayer.BehaviorFrames = Item.useAnimation;
+                    verPlayer.RapierBehavior = Behavior.Thrust;
 
-                        verPlayer.AddMana(ManaColor.Red, -1);
+                    verPlayer.AddMana(ManaColor.Red, -1);
 
-                        Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, (int)Behavior.EnchantedSwing);
-                    }
-                    else
-                    {
-                        verPlayer.RapierBehavior = Behavior.Swing;
-                        verPlayer.BehaviorFrames = Item.useAnimation;
-
-                        Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, player.whoAmI, (int)Behavior.Swing);
-                    }
+                    Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, (int)Behavior.EnchantedThrust, Item.useAnimation);
                 }
-                else if (verPlayer.RapierBehavior == Behavior.Swing)
+                else
                 {
-                    if (verPlayer.GetCombinedMana() > 0)
-                    {
-                        verPlayer.RapierBehavior = Behavior.Thrust;
-                        verPlayer.BehaviorFrames = Item.useAnimation;
+                    verPlayer.RapierBehavior = Behavior.Thrust;
 
-                        verPlayer.AddMana(ManaColor.Red, -1);
-
-                        Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, (int)Behavior.EnchantedThrust);
-                    }
-                    else
-                    {
-                        verPlayer.RapierBehavior = Behavior.Thrust;
-                        verPlayer.BehaviorFrames = Item.useAnimation;
-
-                        Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, player.whoAmI, (int)Behavior.Thrust);
-                    }
+                    Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, player.whoAmI, (int)Behavior.Thrust, Item.useAnimation);
                 }
             }
-
-            if (verPlayer.LastRapierUsage.ContainsKey(FullName)) verPlayer.LastRapierUsage[FullName] = DateTime.Now;
-            else verPlayer.LastRapierUsage.Add(FullName, DateTime.Now);
 
             return false;
         }

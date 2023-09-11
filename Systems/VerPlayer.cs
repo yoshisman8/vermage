@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json.Bson;
 using ReLogic.Utilities;
 using Steamworks;
@@ -14,11 +17,13 @@ using Terraria.DataStructures;
 using Terraria.GameContent.UI;
 using Terraria.GameInput;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.Net;
 using vermage.Buffs;
 using vermage.Items.Abstracts;
 using vermage.Projectiles.Rapiers;
 using vermage.Systems.Events;
+using vermage.Systems.Handlers;
 using vermage.Systems.Utilities;
 
 namespace vermage.Systems
@@ -50,11 +55,12 @@ namespace vermage.Systems
             }
         }
 
-        
+        public Dictionary<string, bool> UnlockedSpells = new();
+
+
         public string Slot1;
         public string Slot2;
         public int SelectedSlot = 1;
-        public bool IsCasting;
         public bool WasCasting;
         public void CycleSlots()
         {
@@ -106,20 +112,46 @@ namespace vermage.Systems
         public List<IVerEvent> Events = new();
 
         public Vector2? FocusPosition;
-        public RapierData? Rapier { get
+        public RapierData? RapierData => Rapier?.RapierData ?? null;
+        public BaseRapier Rapier
+        {
+            get
             {
                 if (Player.HeldItem.ModItem is BaseRapier)
                 {
-                    return (Player.HeldItem.ModItem as BaseRapier).RapierData;
+                    return (Player.HeldItem.ModItem as BaseRapier);
                 }
                 return null;
             }
         }
         public Behavior RapierBehavior = Behavior.Idle;
-        public int BehaviorFrames = 0;
+        public SpellData? CastingSpell = null;
         public int CastingTimer = 0;
-        public Dictionary<string, DateTime> LastRapierUsage = new();
+        public DateTime? LastRapierUsage = null;
         public bool LungeTechnique = false;
+
+        public override void LoadData(TagCompound tag)
+        {
+            foreach(var sp in vermage.Spells)
+            {
+                if (tag.ContainsKey($"{sp.Key}/unlock")) UnlockedSpells.Add(sp.Key, tag.GetBool($"{sp.Key}/unlock"));
+                else UnlockedSpells.Add(sp.Key, false);
+            }
+
+            if (tag.ContainsKey($"{Mod.Name}/Slot1")) Slot1 = tag.GetString($"{Mod.Name}/Slot1");
+            if (tag.ContainsKey($"{Mod.Name}/Slot2")) Slot2 = tag.GetString($"{Mod.Name}/Slot2");
+            if (tag.ContainsKey($"{Mod.Name}/SelectedSlot")) SelectedSlot = tag.GetAsInt($"{Mod.Name}/SelectedSlot");
+        }
+        public override void SaveData(TagCompound tag)
+        {
+            foreach (var sp in UnlockedSpells)
+            {
+                tag.Add($"{sp.Key}/unlock", sp.Value);
+            }
+            tag.Add($"{Mod.Name}/Slot1", Slot1);
+            tag.Add($"{Mod.Name}/Slot2", Slot2);
+            tag.Add($"{Mod.Name}/SelectedSlot", SelectedSlot);
+        }
 
         public override void PreUpdate()
         {
@@ -127,78 +159,131 @@ namespace vermage.Systems
             if (WhiteMana > MaxMana) WhiteMana = MaxMana;
             if (BlackMana < 0) BlackMana = 0;
             if (WhiteMana < 0) WhiteMana = 0;
-        }
 
+            if (!Player.ItemTimeIsZero && Rapier != null)
+            {
+                LastRapierUsage = DateTime.Now;
+            }
+        }
+        
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             if (SwapSpells.JustPressed)
             {
-
+                CycleSlots();
             }
 
-            if (IsCasting && Main.mouseRight)
+            if (RapierData != null && GetCurrentSpell().HasValue)
             {
-                var spellData = GetCurrentSpell();
-                if (spellData.HasValue)
-                {
-                    HandleCasting();
-                }
+                HandleCasting();
             }
-            else if (IsCasting && !Main.mouseRight)
-            {
-                IsCasting = false;
-                CastingTimer = 0;
-                RapierBehavior = Behavior.Idle;
-                BehaviorFrames = 0;
-            }
-
         }
         public void HandleCasting()
         {
-            if (CastingTimer == 0)
+            if (Player.ItemTimeIsZero && !CastingSpell.HasValue && GetCurrentSpell().HasValue && RapierBehavior == Behavior.Idle  && MouseRightJustPressed()) // If MouseRight was JUST pressed and the player is not casting
             {
-                SoundEngine.PlaySound(new SoundStyle("vermage/Assets/Sounds/Latch"));
+                WasCasting = true;
+                RapierBehavior = Behavior.Casting;
+                LastRapierUsage = DateTime.Now;
+                CastingSpell = GetCurrentSpell();
+                Player.SetItemTime(10);
+                CastingSFXSlot = SoundEngine.PlaySound(new SoundStyle("vermage/Assets/Sounds/Latch"), Player.Center);
             }
-            else if (CastingTimer > BehaviorFrames)
+            else if (CastingSpell.HasValue && MouseRightCurrent()) // If the player is casting && mouseRight is currently being held
             {
-                IsCasting = false;
-                RapierBehavior = Behavior.Idle;
-                BehaviorFrames = 0;
+                // If the timer is equal or higher than the casting frames. 
+                // Then cast the spell.
+                if (CastingTimer >= CastingSpell.Value.GetCastingFrames(Player)) 
+                {
+                    CastSpell(Rapier, CastingSpell.Value);
+                    Player.SetItemTime(10); // IMPORTANT! This adds a 10-frame cooldown between repeated castings of spells.
+                    RapierBehavior = Behavior.Idle; 
+                    CastingTimer = 0;
+                    CastingSpell = null;
+                }
+                else
+                {
+                    // IMPORTANT! This adds a 10-frame cooldown between your last casting tick and your next spell being casted.
+                    // If the user was not holding down RMB this frame, they should still have 9 frames of cooldown left 
+                    // Which will prevent them from casting by mashing RMB.
+                    Player.SetItemTime(10); 
+                    LastRapierUsage = DateTime.Now;
+                    CastingTimer++;
+                }
+            }
+            else // If the player is neither casting, nor holding mouse right, reset casting state.
+            {
+                if (CastingSFXSlot.HasValue) // If there is a tracked casting sound effect 
+                {
+                    if (SoundEngine.TryGetActiveSound(CastingSFXSlot.Value, out ActiveSound sound)) // And we can pull the ActiveSound out of that tracked sould
+                    {
+                        sound.Stop(); // Then stop the sound effect.
+                    }
+                }
+                CastingSpell = null;
                 CastingTimer = 0;
             }
-            CastingTimer++;
         }
 
         public override void ResetEffects()
         {
-            if (!Rapier.HasValue)
+            if (RapierData == null)
             {
-                IsCasting = false;
                 RapierBehavior = Behavior.Idle;
                 CastingTimer = 0;
-                BehaviorFrames = 0;
+                CastingSpell = null;
+                LastRapierUsage = null;
             }
-            else if (Rapier.HasValue)
+            else
             {
-                if (RapierBehavior == Behavior.Casting || IsCasting)
+                if (LastRapierUsage.HasValue)
                 {
-                    if ((DateTime.Now - LastRapierUsage[Rapier.Value.FullName]).TotalSeconds > 0.5)
+                    // If the user is current casting a spell
+                    // AND it's been 1/2 a second since the LastRapierUsage has been update
+                    // Then clear all spell data and return to idle behavior
+                    if (CastingSpell.HasValue && (DateTime.Now - LastRapierUsage.Value).TotalSeconds > 0.5f)
                     {
-                        IsCasting = false;
+                        CastingSpell = null;
                         RapierBehavior = Behavior.Idle;
                         CastingTimer = 0;
-                        BehaviorFrames = 0;
+                        LastRapierUsage = null;
                     }
+
+                    // If the user is in Swing or Thrust behavior
+                    // AND it's been 8/10ths of a second since the LastRapierUsage has been updated
+                    // Then end the combo and return to idle
+                    if ((RapierBehavior == Behavior.Swing || RapierBehavior == Behavior.Thrust) && (DateTime.Now - LastRapierUsage.Value).TotalSeconds > 0.8f)
+                    {
+                        RapierBehavior = Behavior.Idle;
+                        LastRapierUsage = null;
+                    }
+                }
+                else
+                {
+                    RapierBehavior = Behavior.Idle;
+                    CastingTimer = 0;
+                    CastingSpell = null;
+                    LastRapierUsage = null;
                 }
             }
             
             LungeTechnique = false;
             MaxMana = 3;
             ManaGainRate = new(1, 1);
-            CastingSpeed = new(1, 1);
+            CastingSpeed = new(1f, Main.frameRate);
 
         }
 
+        private bool MouseRightJustPressed() => Main.mouseRight && Main.mouseRightRelease;
+        private bool MouseRightCurrent() => Main.mouseRight && !Main.mouseRightRelease;
+        public void CastSpell(BaseRapier rapier, SpellData spell)
+        {
+            int damage = (int)Player.GetTotalDamage<VermilionDamageClass>().ApplyTo(rapier.Item.damage);
+            float knockback = Player.GetTotalKnockback<VermilionDamageClass>().ApplyTo(rapier.Item.knockBack);
+
+            Projectile.NewProjectileDirect(Player.GetSource_ItemUse(rapier.Item), FocusPosition ?? Player.Center, spell.Velocity, spell.ProjectileType, damage, knockback, Player.whoAmI);
+            ProcessOnCast(spell);
+        }
         public void ProcessOnCast(SpellData spell)
         {
             foreach (OnCastSpell e in Events.Where(x=> x is OnCastSpell))
