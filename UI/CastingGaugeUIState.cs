@@ -25,6 +25,7 @@ namespace vermage.UI
 
         private CastingGaugeContainer Container;
         private UIImage CastingGauge;
+        private UIImage SpellIconFrame;
         private SpellIcon SpellIcon;
         private SpellName SpellName;
         private CastingBar Bar;
@@ -70,8 +71,13 @@ namespace vermage.UI
             Container.Append(SpellName);
 
             SpellIcon = new("vermage/Assets/Spells/Jolt");
-            SpellIcon.Left.Set(-48f, 0f);
+            SpellIcon.Left.Set(-52f, 0f);
             SpellIcon.Top.Set(1f, 0f);
+
+            SpellIconFrame = new(ModContent.Request<Texture2D>("vermage/Assets/UI/CastingIconFrame"));
+            SpellIconFrame.Left.Set(-4f, 0f);
+            SpellIconFrame.Top.Set(-4f, 0f);
+            SpellIcon.Append(SpellIconFrame);
 
             Container.Append(SpellIcon);
 

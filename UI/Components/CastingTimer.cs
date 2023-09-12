@@ -21,16 +21,16 @@ namespace vermage.UI.Components
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            if (CastingGaugeUIState.CastingTime - CastingGaugeUIState.CastingTime > 0)
+            if (CastingGaugeUIState.CastingTime - CastingGaugeUIState.CastingProgress > 0)
             {
-                seconds = (float)(CastingGaugeUIState.CastingTime - CastingGaugeUIState.CastingTime) / Main.frameRate;
+                seconds = (float)(CastingGaugeUIState.CastingTime - CastingGaugeUIState.CastingProgress) / Main.frameRate;
 
                 SetText("CASTING " + seconds.ToString("00.00"));
             }
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (CastingGaugeUIState.CastingTime - CastingGaugeUIState.CastingTime > 0)
+            if (CastingGaugeUIState.CastingTime - CastingGaugeUIState.CastingProgress > 0)
             {
                 base.Draw(spriteBatch);
             }
