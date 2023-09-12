@@ -27,6 +27,16 @@ namespace vermage.Projectiles.Rapiers
             Projectile.Size = new Vector2(50,56);
         }
 
+        public override void IdleStanceAI()
+        {
+            base.IdleStanceAI();
+            if (VerOwner.CastingSpell.HasValue || VerOwner.WasCasting)
+            {
+                DrawOffsetX = (int)(Projectile.Size.X * 0.15f) * Projectile.direction;
+                DrawOriginOffsetY = (int)(-Projectile.Size.Y * 0.30f);
+                DrawOriginOffsetX = (int)(-Projectile.Size.X * 0.18f) * Projectile.direction;
+            }
+        }
     }
 
     

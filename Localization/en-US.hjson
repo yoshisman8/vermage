@@ -41,6 +41,16 @@ Mods: {
 				DisplayName: Jolt
 				Description: Mods.vermage.Buffs.Jolt.Description
 			}
+
+			Fire: {
+				DisplayName: Fire
+				Description: Mods.vermage.Buffs.Fire.Description
+			}
+
+			RedFlames: {
+				DisplayName: Red Flames
+				Description: Mods.vermage.Buffs.RedFlames.Description
+			}
 		}
 
 		Items: {
@@ -80,6 +90,8 @@ Mods: {
 			ShadowsEdgeProjectile.DisplayName: Shadows Edge Projectile
 			TheStingerProjectile.DisplayName: The Stinger Projectile
 			JoltProjectile.DisplayName: Jolt Projectile
+			ShadowsEdgeFocusProjectile.DisplayName: Shadows Edge Focus Projectile
+			FireProjectile.DisplayName: Fire Projectile
 		}
 	}
 }

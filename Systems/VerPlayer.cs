@@ -194,25 +194,30 @@ namespace vermage.Systems
         {
             if (Player.ItemTimeIsZero && !CastingSpell.HasValue && GetCurrentSpell().HasValue && RapierBehavior == Behavior.Idle && MouseRightCurrent()) // If MouseRight was JUST pressed and the player is not casting
             {
-                WasCasting = true;
-                RapierBehavior = Behavior.Casting;
-                LastRapierUsage = DateTime.Now;
-                CastingSpell = GetCurrentSpell();
+                if (Player.CheckMana(GetCurrentSpell().Value.ManaCost))
+                {
+                    WasCasting = true;
+                    RapierBehavior = Behavior.Casting;
+                    LastRapierUsage = DateTime.Now;
+                    CastingSpell = GetCurrentSpell();
+                    CastingSFXSlot = SoundEngine.PlaySound(new SoundStyle("vermage/Assets/Sounds/Latch"), Player.Center);
+                }
                 Player.SetItemTime(10);
-                CastingSFXSlot = SoundEngine.PlaySound(new SoundStyle("vermage/Assets/Sounds/Latch"), Player.Center);
             }
             else if (CastingSpell.HasValue && MouseRightCurrent()) // If the player is casting && mouseRight is currently being held
             {
-                int cstingFrames = CastingSpell.Value.GetCastingFrames(Player);
                 // If the timer is equal or higher than the casting frames. 
                 // Then cast the spell.
-                if (CastingTimer >= cstingFrames) 
+                if (CastingTimer >= CastingSpell.Value.GetCastingFrames(Player)) 
                 {
-                    CastSpell(Rapier, CastingSpell.Value);
-                    Player.SetItemTime(10); // IMPORTANT! This adds a 10-frame cooldown between repeated castings of spells.
-                    RapierBehavior = Behavior.Idle; 
-                    CastingTimer = 0;
-                    CastingSpell = null;
+                    if (Player.CheckMana(CastingSpell.Value.ManaCost, true))
+                    {
+                        CastSpell(Rapier, CastingSpell.Value);
+                        Player.SetItemTime(10); // IMPORTANT! This adds a 10-frame cooldown between repeated castings of spells.
+                        RapierBehavior = Behavior.Idle;
+                        CastingTimer = 0;
+                        CastingSpell = null;
+                    }
                 }
                 else
                 {
@@ -284,7 +289,7 @@ namespace vermage.Systems
             MaxMana = 3;
             ManaGainRate = new(1, 1);
             CastingSpeed = new(1f, Main.frameRate);
-
+            Events = new();
         }
 
 

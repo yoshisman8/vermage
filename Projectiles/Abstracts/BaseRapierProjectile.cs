@@ -41,10 +41,10 @@ namespace vermage.Projectiles.Rapiers
             set => Projectile.ai[2] = value;
         }
 
-        private Player Owner;
-        private VerPlayer VerOwner { get { return Owner.GetModPlayer<VerPlayer>(); } }
-        private Vector2 StartPosition;
-        private Vector2 MousePosition; 
+        public Player Owner;
+        public VerPlayer VerOwner { get { return Owner.GetModPlayer<VerPlayer>(); } }
+        public Vector2 StartPosition;
+        public Vector2 MousePosition; 
 
 
         int idlePause;
@@ -142,7 +142,7 @@ namespace vermage.Projectiles.Rapiers
             }
         }
         #region IdleAI
-        private void IdleStanceAI()
+        public virtual void IdleStanceAI()
         {
             Projectile.timeLeft = 10;
             Vector2 playerCenter = Owner.RotatedRelativePoint(Owner.MountedCenter);
@@ -181,13 +181,16 @@ namespace vermage.Projectiles.Rapiers
                 ).ToRotation() + MathHelper.PiOver2);
 
             Owner.direction = Math.Sign(Main.MouseWorld.X - Owner.Center.X);
-
-            if (Owner.ownedProjectileCounts[VerOwner.RapierData.Value.GuardProjectile] < 1 && VerOwner.RapierData.Value.GuardProjectile != -1)
+            
+            if (VerOwner.RapierData.Value.GuardProjectile != -1)
             {
-                Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, new Vector2(0), VerOwner.RapierData.Value.GuardProjectile, 0, 0, Owner.whoAmI, Projectile.whoAmI);
+                if (Owner.ownedProjectileCounts[VerOwner.RapierData.Value.GuardProjectile] < 1 && VerOwner.RapierData.Value.GuardProjectile != -1)
+                {
+                    Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, new Vector2(0), VerOwner.RapierData.Value.GuardProjectile, 0, 0, Owner.whoAmI, Projectile.whoAmI);
+                }
             }
         }
-        private void UpdateIdle()
+        public virtual void UpdateIdle()
         {
             if (floatUpOrDown)//Up
             {
@@ -236,7 +239,7 @@ namespace vermage.Projectiles.Rapiers
         #endregion
 
         #region SwingAI
-        private void SwingAI()
+        public virtual void SwingAI()
         {
             if (Timer > TotalTime)
             {
@@ -279,7 +282,7 @@ namespace vermage.Projectiles.Rapiers
         #endregion
 
         #region ThrustAI
-        private void ThrustAI()
+        public virtual void ThrustAI()
         {
             if (Timer > TotalTime)
             {

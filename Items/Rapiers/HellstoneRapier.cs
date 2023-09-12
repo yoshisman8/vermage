@@ -16,6 +16,7 @@ using vermage.Systems.Utilities;
 using vermage.Items.Abstracts;
 using vermage.Projectiles.Foci;
 using vermage.Projectiles.Guards;
+using vermage.Systems;
 
 namespace vermage.Items.Rapiers
 {
@@ -44,6 +45,18 @@ namespace vermage.Items.Rapiers
             Item.shoot = RapierProjectile;
         }
 
+        public override void HoldItem(Player player)
+        {
+            base.HoldItem(player);
+            VerPlayer vplayer = player.GetModPlayer<VerPlayer>();
+
+            if (!vplayer.HasSpellUnloked("vermage/Fire"))
+            {
+                vplayer.UnlockSpell("vermage/Fire");
+                vplayer.Slot2 = "vermage/Fire";
+                Main.NewText(Language.GetTextValue("Mods.vermage.Messages.UnlockMessage", vermage.Spells["vermage/Fire"].Name.Value));
+            }
+        }
         public override void AddRecipes()
         {
             CreateRecipe()

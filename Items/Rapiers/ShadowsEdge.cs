@@ -25,8 +25,8 @@ namespace vermage.Items.Rapiers
         {
             base.SetDefaults();
 
-            Item.width = 50;
-            Item.height = 56;
+            Item.width = 64;
+            Item.height = 64;
             Item.maxStack = 1;
             Item.value = Item.sellPrice(0, 0, 0, 50);
             Item.rare = ItemRarityID.Orange;
@@ -38,7 +38,7 @@ namespace vermage.Items.Rapiers
             Item.useAnimation = 32;
 
             RapierProjectile = ProjectileType<ShadowsEdgeProjectile>();
-            FocusProjectile = ProjectileType<ExampleFocusProjectile>();
+            FocusProjectile = ProjectileType<ShadowsEdgeFocusProjectile>();
             Item.shoot = RapierProjectile;
 
         }
