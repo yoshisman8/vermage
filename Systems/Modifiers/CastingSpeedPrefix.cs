@@ -23,7 +23,7 @@ namespace vermage.Systems.Modifiers
         }
         public override IEnumerable<TooltipLine> GetTooltipLines(Item item)
         {
-            yield return new TooltipLine(Mod, Name, Tooltip.Format((int)Math.Floor(0.02f * Power))) { IsModifier = true };
+            yield return new TooltipLine(Mod, Name, Tooltip.Format((int)Math.Floor(2f * Power))) { IsModifier = true };
         }
     }
 }

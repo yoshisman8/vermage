@@ -8,6 +8,6 @@ namespace vermage.Systems.Modifiers
 {
     public class CastingSpeedIIPrefix : CastingSpeedPrefix
     {
-        public override float Power => 5f;
+        public override float Power => 2f;
     }
 }
