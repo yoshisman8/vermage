@@ -43,7 +43,7 @@ namespace vermage.Items.Abstracts
             Item.UseSound = null;
             Item.noUseGraphic = true;
             Item.noMelee = true;
-            Item.autoReuse = true;
+            Item.autoReuse = false;
         }
         public override void SetStaticDefaults()
         {
@@ -63,10 +63,7 @@ namespace vermage.Items.Abstracts
                 Main.NewText(Language.GetTextValue("Mods.vermage.Messages.UnlockMessage", vermage.Spells["vermage/Jolt"].Name.Value));
             }
 
-            if (vplayer.GetCurrentSpell().HasValue)
-            {
-                Item.mana = vplayer.GetCurrentSpell().Value.ManaCost;
-            }
+            Item.autoReuse = player.autoReuseGlove;
 
             if (player.ownedProjectileCounts[RapierProjectile] < 1 && (vplayer.RapierBehavior == Behavior.Idle || vplayer.RapierBehavior == Behavior.Casting))
             {

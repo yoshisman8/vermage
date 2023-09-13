@@ -21,6 +21,7 @@ using Terraria.ModLoader.IO;
 using Terraria.Net;
 using vermage.Buffs;
 using vermage.Items.Abstracts;
+using vermage.Items.Materia;
 using vermage.Projectiles.Rapiers;
 using vermage.Systems.Events;
 using vermage.Systems.Handlers;
@@ -43,6 +44,9 @@ namespace vermage.Systems
             {
                 amount = ManaGainRate.ApplyTo(amount);
             }
+            
+            if (amount > 0 && Type == ManaColor.Red && RefundRedMana()) return;
+
             switch (Type)
             {
                 case ManaColor.Black:
@@ -58,6 +62,10 @@ namespace vermage.Systems
                     BlackMana += amount;
                     break;
             }
+        }
+        public bool RefundRedMana()
+        {
+            return Main.rand.NextFloat(0f, 1f) <= manaRefundChance;
         }
 
         public Dictionary<string, bool> UnlockedSpells = new();
@@ -121,6 +129,7 @@ namespace vermage.Systems
         public StatModifier ManaGainRate = new(1f, 1f);
         public StatModifier ManaConversionRate = new(0f, 1f);
         public StatModifier CastingSpeed = new(1f, Main.frameRate);
+        public float manaRefundChance = 0f;
 
         public static ModKeybind ToggleSpellbook;
         public static ModKeybind SwapSpells;
@@ -147,6 +156,8 @@ namespace vermage.Systems
         public int CastingTimer = 0;
         public DateTime? LastRapierUsage = null;
         public bool LungeTechnique = false;
+        
+        public List<MateriaColor> MaterialColors = new();
 
         public override void LoadData(TagCompound tag)
         {
@@ -298,6 +309,9 @@ namespace vermage.Systems
             CastingSpeed = new(1f, Main.frameRate);
             ManaConversionRate = new(0f, 1f);
             Events = new();
+            MaterialColors = new();
+            manaRefundChance = 0f;
+
         }
 
 
