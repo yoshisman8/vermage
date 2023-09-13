@@ -39,19 +39,24 @@ namespace vermage.Systems
         }
         public void AddMana(ManaColor Type, float amount)
         {
+            if (amount > 0)
+            {
+                amount = ManaGainRate.ApplyTo(amount);
+            }
             switch (Type)
             {
                 case ManaColor.Black:
-                    if (amount > 0) BlackMana += ManaGainRate.ApplyTo(amount);
-                    else BlackMana += amount; break;
+                    BlackMana += amount;
+                    WhiteMana += Math.Min(amount, ManaConversionRate.ApplyTo(amount));
+                    break;  
                 case ManaColor.White:
-                    if (amount > 0) WhiteMana += ManaGainRate.ApplyTo(amount);
-                    else WhiteMana += amount; break;
+                    WhiteMana += amount;
+                    BlackMana += Math.Min(amount, ManaConversionRate.ApplyTo(amount));
+                    break;
                 default:
-                    if (amount > 0) BlackMana += ManaGainRate.ApplyTo(amount);
-                    else BlackMana += amount;
-                    if (amount > 0) WhiteMana += ManaGainRate.ApplyTo(amount);
-                    else WhiteMana += amount; break;
+                    WhiteMana += amount;
+                    BlackMana += amount;
+                    break;
             }
         }
 
@@ -114,6 +119,7 @@ namespace vermage.Systems
 
 
         public StatModifier ManaGainRate = new(1f, 1f);
+        public StatModifier ManaConversionRate = new(0f, 1f);
         public StatModifier CastingSpeed = new(1f, Main.frameRate);
 
         public static ModKeybind ToggleSpellbook;
@@ -194,7 +200,7 @@ namespace vermage.Systems
         {
             if (Player.ItemTimeIsZero && !CastingSpell.HasValue && GetCurrentSpell().HasValue && RapierBehavior == Behavior.Idle && MouseRightCurrent()) // If MouseRight was JUST pressed and the player is not casting
             {
-                if (Player.CheckMana(GetCurrentSpell().Value.ManaCost))
+                if (Player.CheckMana(GetCurrentSpell().Value.GetManaCost(Player, Rapier)))
                 {
                     WasCasting = true;
                     RapierBehavior = Behavior.Casting;
@@ -206,11 +212,12 @@ namespace vermage.Systems
             }
             else if (CastingSpell.HasValue && MouseRightCurrent()) // If the player is casting && mouseRight is currently being held
             {
+                int castingTime = CastingSpell.Value.GetCastingFrames(Player);
                 // If the timer is equal or higher than the casting frames. 
                 // Then cast the spell.
-                if (CastingTimer >= CastingSpell.Value.GetCastingFrames(Player)) 
+                if (CastingTimer >= castingTime) 
                 {
-                    if (Player.CheckMana(CastingSpell.Value.ManaCost, true))
+                    if (Player.CheckMana(GetCurrentSpell().Value.GetManaCost(Player, Rapier), true)) 
                     {
                         CastSpell(Rapier, CastingSpell.Value);
                         Player.SetItemTime(10); // IMPORTANT! This adds a 10-frame cooldown between repeated castings of spells.
@@ -287,8 +294,9 @@ namespace vermage.Systems
             
             LungeTechnique = false;
             MaxMana = 3;
-            ManaGainRate = new(1, 1);
+            ManaGainRate = new(1f, 1f);
             CastingSpeed = new(1f, Main.frameRate);
+            ManaConversionRate = new(0f, 1f);
             Events = new();
         }
 

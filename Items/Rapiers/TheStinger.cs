@@ -38,8 +38,7 @@ namespace vermage.Items.Rapiers
             Item.useAnimation = 32;
 
             RapierProjectile = ProjectileType<TheStingerProjectile>();
-            GuardProjectile = ProjectileType<TheStingerGuardProjectile>();
-            FocusProjectile = ProjectileType<ExampleFocusProjectile>();
+            FocusProjectile = ProjectileType<TheStingerFocusProjectile>();
             Item.shoot = RapierProjectile;
 
         }

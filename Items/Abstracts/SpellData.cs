@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,7 @@ namespace vermage.Items.Abstracts
         public StatModifier Knockback { get; set; }
         public float CastingTime { get; set; }
 
-        public int GetCastingFrames(Player player) => (int)player.GetModPlayer<VerPlayer>().CastingSpeed.ApplyTo(CastingTime);
+        public int GetCastingFrames(Player player) => (int)Math.Max(0.25f * Main.frameRate, player.GetModPlayer<VerPlayer>().CastingSpeed.ApplyTo(CastingTime));
+        public int GetManaCost(Player player, BaseRapier rapier) => ManaCost;
     }
 }

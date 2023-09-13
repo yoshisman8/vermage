@@ -63,6 +63,11 @@ namespace vermage.Items.Abstracts
                 Main.NewText(Language.GetTextValue("Mods.vermage.Messages.UnlockMessage", vermage.Spells["vermage/Jolt"].Name.Value));
             }
 
+            if (vplayer.GetCurrentSpell().HasValue)
+            {
+                Item.mana = vplayer.GetCurrentSpell().Value.ManaCost;
+            }
+
             if (player.ownedProjectileCounts[RapierProjectile] < 1 && (vplayer.RapierBehavior == Behavior.Idle || vplayer.RapierBehavior == Behavior.Casting))
             {
                 Projectile.NewProjectileDirect(player.GetSource_ItemUse(player.HeldItem), player.position, new Vector2(0), RapierProjectile, Item.damage, Item.knockBack, player.whoAmI, (int)Behavior.Idle);

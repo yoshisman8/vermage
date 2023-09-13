@@ -36,6 +36,39 @@ Mods: {
 			"Swap Spells.DisplayName": Swap  Spells
 		}
 
+		Prefixes: {
+			CastingSpeedPrefix: {
+				DisplayName: Rapid-Casted
+				AdditionalTooltip: +{0}% Casting Speed.
+			}
+
+			CastingSpeedIIPrefix: {
+				DisplayName: Swift-Casted
+				AdditionalTooltip: +{0}% Casting Speed.
+			}
+
+			CastingSpeedIIIPrefix: {
+				DisplayName: Triple-Casted
+				AdditionalTooltip: +{0}% Casting Speed.
+			}
+			ManaConvertPrefix: {
+				DisplayName: Shifted
+				AdditionalTooltip: +{0}% Colored Mana Conversion.
+			}
+			ManaConvertIIPrefix: {
+				DisplayName: Enchanted
+				AdditionalTooltip: +{0}% Colored Mana Conversion.
+			}
+			ManaConvertIIIPrefix: {
+				DisplayName: Emboldened
+				AdditionalTooltip: +{0}% Colored Mana Conversion.
+			}
+			ManaConvertIVPrefix: {
+				DisplayName: Manaficated
+				AdditionalTooltip: +{0}% Colored Mana Conversion.
+			}
+		}
+
 		Buffs: {
 			Jolt: {
 				DisplayName: Jolt
@@ -92,6 +125,7 @@ Mods: {
 			JoltProjectile.DisplayName: Jolt Projectile
 			ShadowsEdgeFocusProjectile.DisplayName: Shadows Edge Focus Projectile
 			FireProjectile.DisplayName: Fire Projectile
+			TheStingerFocusProjectile.DisplayName: The Stinger Focus Projectile
 		}
 	}
 }
