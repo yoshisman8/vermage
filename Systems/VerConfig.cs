@@ -47,7 +47,7 @@ namespace vermage.Systems
         [Header("$Mods.vermage.Configs.Headers.MateriaSlots")]
         [LabelKey("$Mods.vermage.Configs.MateriaSlotsX.DisplayName")]
         [TooltipKey("$Mods.vermage.Configs.MateriaSlotsX.Tooltip")]
-        [DefaultValue(0.84f)]
+        [DefaultValue(0.82f)]
         [Range(0f, 1f)]
         public float MateriaSlotsX { get; set; }
 
@@ -55,7 +55,7 @@ namespace vermage.Systems
         [LabelKey("$Mods.vermage.Configs.MateriaSlotsY.DisplayName")]
         [TooltipKey("$Mods.vermage.Configs.MateriaSlotsY.Tooltip")]
         [Range(0f, 1f)]
-        [DefaultValue(0.48f)]
+        [DefaultValue(0.489999999f)]
         public float MateriaSlotsY { get; set; }
 
         public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref string message)

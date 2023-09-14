@@ -11,6 +11,7 @@ namespace vermage.Buffs
 {
     public class RedFlames : ModBuff
     {
+        private int timer = 0;
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
@@ -21,11 +22,21 @@ namespace vermage.Buffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            npc.SimpleStrikeNPC(1, 0);
+            timer++;
+            if (timer >= Main.frameRate)
+            {
+                timer = 0;
+                npc.SimpleStrikeNPC(1, 0);
+            }
         }
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Hurt(PlayerDeathReason.ByOther(Type), 1, 0, knockback: 0f, dodgeable: false, armorPenetration: 1f);
+            timer++;
+            if (timer >= Main.frameRate)
+            {
+                timer = 0;
+                player.Hurt(PlayerDeathReason.ByOther(Type), 1, 0, knockback: 0f, dodgeable: false, armorPenetration: 1f);
+            }
         }
     }
 }
