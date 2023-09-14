@@ -21,6 +21,7 @@ namespace vermage.Items.Materia
         {
             player.GetModPlayer<VerPlayer>().MaterialColors.Add(Color);
         }
+        
         public override bool CanEquipAccessory(Player player, int slot, bool modded)
         {
             VerPlayer verPlayer = player.GetModPlayer<VerPlayer>();
@@ -31,6 +32,8 @@ namespace vermage.Items.Materia
             base.SetDefaults();
             Item.accessory = true;
             Item.Size = new(26);
+            Item.stack = 1;
+
         }
         public override bool? PrefixChance(int pre, UnifiedRandom rand)
         {

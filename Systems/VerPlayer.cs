@@ -16,6 +16,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.UI;
 using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Net;
@@ -158,6 +159,10 @@ namespace vermage.Systems
         public bool LungeTechnique = false;
         
         public List<MateriaColor> MaterialColors = new();
+        public bool UnlockedMateriaSlot2;
+        public bool UnlockedMateriaSlot3;
+
+        public Vector2 CursorPosition;
 
         public override void LoadData(TagCompound tag)
         {
@@ -170,6 +175,8 @@ namespace vermage.Systems
             if (tag.ContainsKey($"{Mod.Name}/Slot1")) Slot1 = tag.GetString($"{Mod.Name}/Slot1");
             if (tag.ContainsKey($"{Mod.Name}/Slot2")) Slot2 = tag.GetString($"{Mod.Name}/Slot2");
             if (tag.ContainsKey($"{Mod.Name}/SelectedSlot")) SelectedSlot = tag.GetAsInt($"{Mod.Name}/SelectedSlot");
+            if (tag.ContainsKey($"{Mod.Name}/UnlockedMateriaSlot2")) UnlockedMateriaSlot2 = tag.GetBool($"{Mod.Name}/UnlockedMateriaSlot2");
+            if (tag.ContainsKey($"{Mod.Name}/UnlockedMateriaSlot3")) UnlockedMateriaSlot3 = tag.GetBool($"{Mod.Name}/UnlockedMateriaSlot3");
         }
         public override void SaveData(TagCompound tag)
         {
@@ -180,6 +187,8 @@ namespace vermage.Systems
             tag.Add($"{Mod.Name}/Slot1", Slot1);
             tag.Add($"{Mod.Name}/Slot2", Slot2);
             tag.Add($"{Mod.Name}/SelectedSlot", SelectedSlot);
+            tag.Add($"{Mod.Name}/UnlockedMateriaSlot2", UnlockedMateriaSlot2);
+            tag.Add($"{Mod.Name}/UnlockedMateriaSlot3", UnlockedMateriaSlot3);
         }
 
         public override void PreUpdate()
@@ -206,6 +215,10 @@ namespace vermage.Systems
             {
                 HandleCasting();
             }
+
+            CursorPosition = Main.MouseWorld;
+
+            if (Main.netMode == NetmodeID.MultiplayerClient) vermage.ShareCursorData(CursorPosition, Player.whoAmI);
         }
         public void HandleCasting()
         {

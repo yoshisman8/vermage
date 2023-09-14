@@ -5,18 +5,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using vermage.Items.Materia;
 
 namespace vermage.Systems.Inventory
 {
-    internal class MateriaSlot : ModAccessorySlot
+    public class MateriaSlot : ModAccessorySlot
     {
         public override bool DrawVanitySlot => false;
         public override bool DrawDyeSlot => false;
-        public override string FunctionalTexture => "vermage/Assets/UI/MateriaSlot";
-
+        public override string FunctionalTexture => "vermage/Assets/UI/MateriaSlotFront";
+        public override string FunctionalBackgroundTexture => "vermage/Assets/UI/MateriaSlotBack";
+        public override Vector2? CustomLocation
+        {
+            get
+            {
+                return VerConfig.Instance.GetMateriaSlotPosition();
+            }
+        }
         public override bool CanAcceptItem(Item checkItem, AccessorySlotType context)
         {
             return checkItem.ModItem is Materia && Player.GetModPlayer<VerPlayer>().MaterialColors.Count < 3;
@@ -26,5 +34,6 @@ namespace vermage.Systems.Inventory
             Main.hoverItemName = Language.GetTextValue("Mods.vermage.Tooltips.MateriaSlot");
             Main.mouseText = true;
         }
+        
     }
 }

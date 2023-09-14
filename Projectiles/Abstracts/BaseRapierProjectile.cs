@@ -83,7 +83,7 @@ namespace vermage.Projectiles.Rapiers
                 case Behavior.Thrust:
                     Projectile.timeLeft = TotalTime;
                     StartPosition = Projectile.Center;
-                    MousePosition = Main.MouseWorld;
+                    MousePosition = VerOwner.CursorPosition;
                     break;
 
                 default:
@@ -147,7 +147,7 @@ namespace vermage.Projectiles.Rapiers
             Projectile.timeLeft = 10;
             Vector2 playerCenter = Owner.RotatedRelativePoint(Owner.MountedCenter);
 
-            Vector2 direction = playerCenter.DirectionTo(Main.MouseWorld);
+            Vector2 direction = playerCenter.DirectionTo(VerOwner.CursorPosition);
             direction.Normalize();
 
             Projectile.spriteDirection = Owner.direction;
@@ -180,7 +180,7 @@ namespace vermage.Projectiles.Rapiers
                 new Vector2(Projectile.Center.X, Projectile.Center.Y + DrawOriginOffsetY + 20)
                 ).ToRotation() + MathHelper.PiOver2);
 
-            Owner.direction = Math.Sign(Main.MouseWorld.X - Owner.Center.X);
+            Owner.direction = Math.Sign(VerOwner.CursorPosition.X - Owner.Center.X);
             
             if (VerOwner.RapierData.Value.GuardProjectile != -1)
             {

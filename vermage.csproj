@@ -8,6 +8,7 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\UI\MateriaSlotBack.png" />
     <None Remove="Buffs\Spells\Fire.png" />
     <None Remove="Buffs\Spells\Jolt.png" />
     <None Remove="Projectiles\Spells\FireProjectile.png" />

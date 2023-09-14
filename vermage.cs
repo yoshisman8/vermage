@@ -21,6 +21,7 @@ namespace vermage
         {
             base.Load();
             Instance = this;
+            VerConfig.Instance = ModContent.GetInstance<VerConfig>();
             VerPlayer.ToggleSpellbook = KeybindLoader.RegisterKeybind(this, "Toggle Spellbook", Microsoft.Xna.Framework.Input.Keys.P);
             VerPlayer.SwapSpells = KeybindLoader.RegisterKeybind(this, "Swap Spells", Microsoft.Xna.Framework.Input.Keys.F);
 

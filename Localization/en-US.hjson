@@ -11,11 +11,36 @@ Mods: {
 				Tooltip: The vertical offset for the casting bar.
 			}
 
-			VerConfig.DisplayName: Project Red Mage
-			Headers.CastingBar: Cast Bar X Header
+			MateriaSlotsX: {
+				DisplayName: Horizontal Offset.
+				Tooltip: The horizontal offset for the Materia slots.
+			}
+
+			MateriaSlotsY: {
+				DisplayName: Vertical Offset.
+				Tooltip: The vertical offset for the Materia slots.
+			}
+
+			VerConfig.DisplayName: Client Config
+
+			Headers: {
+				CastingBar: Casting Bar
+				MateriaSlots: Materia Slots
+				RapierGauge: Rapier Mana Gauge
+			}
 
 			LockCastingBar: {
 				DisplayName: Lock Casting Bar
+				Tooltip: Lock Casting Bar's position'
+			}
+
+			RapierGaugeX: {
+				DisplayName: Rapier Gauge X
+				Tooltip: ""
+			}
+
+			RapierGaugeY: {
+				DisplayName: Rapier Gauge Y
 				Tooltip: ""
 			}
 		}
