@@ -12,7 +12,7 @@ using vermage.Systems;
 
 namespace vermage
 {
-    partial class vermage
+    public partial class vermage
     {
         internal enum MessageType : byte
         {
@@ -42,7 +42,7 @@ namespace vermage
                     break;
             }
         }
-        public static void ShareCursorData(Vector2 data, int whoAmI)
+        public void ShareCursorData(Vector2 data, int whoAmI)
         {
             ModPacket packet = Instance.GetPacket();
 

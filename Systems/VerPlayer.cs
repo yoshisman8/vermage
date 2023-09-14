@@ -218,7 +218,7 @@ namespace vermage.Systems
 
             CursorPosition = Main.MouseWorld;
 
-            if (Main.netMode == NetmodeID.MultiplayerClient) vermage.ShareCursorData(CursorPosition, Player.whoAmI);
+            if (Main.netMode == NetmodeID.MultiplayerClient) vermage.Instance.ShareCursorData(CursorPosition, Player.whoAmI);
         }
         public void HandleCasting()
         {

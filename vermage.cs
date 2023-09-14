@@ -8,11 +8,11 @@ using vermage.Systems;
 
 namespace vermage
 {
-    public class vermage : Mod
+    public partial class vermage : Mod
 	{
 		public static DamageClass HealerClass { get; set; }
         public static Mod ThoriumMod { get; set; }
-        public static Mod Instance { get; set; }
+        public static vermage Instance { get; set; }
         public static Dictionary<string, RapierData> Rapiers { get; set; } = new();
         public static Dictionary<string, SpellData> Spells { get; set; } = new();
 
