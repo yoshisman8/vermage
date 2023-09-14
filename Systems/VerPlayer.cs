@@ -41,26 +41,21 @@ namespace vermage.Systems
         }
         public void AddMana(ManaColor Type, float amount)
         {
-            if (amount > 0)
-            {
-                amount = ManaGainRate.ApplyTo(amount);
-            }
-            
             if (amount > 0 && Type == ManaColor.Red && RefundRedMana()) return;
 
             switch (Type)
             {
                 case ManaColor.Black:
-                    BlackMana += amount;
-                    WhiteMana += Math.Min(amount, ManaConversionRate.ApplyTo(amount));
+                    BlackMana += amount > 0 ? BlackManaGainRate.ApplyTo(amount) : amount;
+                    WhiteMana += amount > 0 ? WhiteManaGainRate.ApplyTo(Math.Min(amount, ManaConversionRate.ApplyTo(amount))) : 0;
                     break;  
                 case ManaColor.White:
-                    WhiteMana += amount;
-                    BlackMana += Math.Min(amount, ManaConversionRate.ApplyTo(amount));
+                    WhiteMana += amount > 0 ? WhiteManaGainRate.ApplyTo(amount) : amount;
+                    BlackMana += amount > 0 ? BlackManaGainRate.ApplyTo(Math.Min(amount, ManaConversionRate.ApplyTo(amount))) : 0;
                     break;
                 default:
-                    WhiteMana += amount;
-                    BlackMana += amount;
+                    WhiteMana += amount > 0 ? WhiteManaGainRate.ApplyTo(amount) : amount;
+                    BlackMana += amount > 0 ? BlackManaGainRate.ApplyTo(amount) : amount;
                     break;
             }
         }
@@ -127,10 +122,13 @@ namespace vermage.Systems
         }
 
 
-        public StatModifier ManaGainRate = new(1f, 1f);
+        public StatModifier BlackManaGainRate = new(1f, 1f);
+        public StatModifier WhiteManaGainRate = new(1f, 1f);
         public StatModifier ManaConversionRate = new(0f, 1f);
         public StatModifier CastingSpeed = new(1f, Main.frameRate);
+        public StatModifier BuffDuration = new(1f, 1f);
         public float manaRefundChance = 0f;
+        public float doubleFinisherchance = 0f;
 
         public static ModKeybind ToggleSpellbook;
         public static ModKeybind SwapSpells;
@@ -318,13 +316,15 @@ namespace vermage.Systems
             
             LungeTechnique = false;
             MaxMana = 3;
-            ManaGainRate = new(1f, 1f);
+            BlackManaGainRate = new(1f, 1f);
+            WhiteManaGainRate = new(1f, 1f);
             CastingSpeed = new(1f, Main.frameRate);
             ManaConversionRate = new(0f, 1f);
             Events = new();
             MaterialColors = new();
             manaRefundChance = 0f;
-
+            doubleFinisherchance = 0f;
+            BuffDuration = new(1f, 1f);
         }
 
 

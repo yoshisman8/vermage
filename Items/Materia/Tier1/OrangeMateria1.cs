@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Terraria;
 using Terraria.Enums;
+using Terraria;
 using vermage.Systems;
 
 namespace vermage.Items.Materia.Tier1
 {
-    public class RedMateria1 : Materia
+    public class OrangeMateria1 : Materia
     {
-        public override MateriaColor Color => MateriaColor.Red;
+        public override MateriaColor Color => MateriaColor.Orange;
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             base.UpdateAccessory(player, hideVisual);
 
-            player.GetModPlayer<VerPlayer>().manaRefundChance += 0.10f;
+            player.GetModPlayer<VerPlayer>().WhiteManaGainRate += 0.10f;
         }
 
         public override void SetDefaults()

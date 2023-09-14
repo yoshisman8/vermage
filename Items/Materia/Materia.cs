@@ -31,7 +31,7 @@ namespace vermage.Items.Materia
         {
             base.SetDefaults();
             Item.accessory = true;
-            Item.Size = new(26);
+            Item.Size = new(27,25);
             Item.stack = 1;
 
         }

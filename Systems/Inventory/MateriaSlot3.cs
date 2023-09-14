@@ -18,7 +18,7 @@ namespace vermage.Systems.Inventory
             {
                 var parent = ModContent.GetInstance<MateriaSlot2>();
 
-                return parent.CustomLocation + new Vector2(0, 54);
+                return parent.CustomLocation + new Vector2(0, 50);
             } 
         }
     }

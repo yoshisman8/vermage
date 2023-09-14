@@ -27,7 +27,7 @@ namespace vermage.Systems.Inventory
         }
         public override bool CanAcceptItem(Item checkItem, AccessorySlotType context)
         {
-            return checkItem.ModItem is Materia && Player.GetModPlayer<VerPlayer>().MaterialColors.Count < 3;
+            return context == AccessorySlotType.FunctionalSlot && checkItem.ModItem is Materia && Player.GetModPlayer<VerPlayer>().MaterialColors.Count < 3;
         }
         public override void OnMouseHover(AccessorySlotType context)
         {

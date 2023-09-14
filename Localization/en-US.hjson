@@ -149,7 +149,28 @@ Mods: {
 
 			RedMateria1: {
 				DisplayName: Red Materia I
-				Tooltip: 5% Chance to not consume Red Mana.
+				Tooltip: 10% Chance to not consume Red Mana.
+			}
+
+			GreenMateria1: {
+				DisplayName: Green Materia I
+				Tooltip: 10% Chance to perform finishing techniques twice.
+			}
+
+			OrangeMateria1: {
+				DisplayName: Orange Materia I
+				Tooltip: +10% Increased White Mana gain.
+			}
+
+			PurpleMateria1: {
+				DisplayName: Purple Materia I
+				Tooltip: +10% Increased Black Mana gain.
+			}
+
+			YellowMateria1: {
+				DisplayName: Yellow Materia I
+				Tooltip: +10% Increased Spell Buff duration.
+				ThoriumSupport: +1 Bonus Healing
 			}
 		}
 
