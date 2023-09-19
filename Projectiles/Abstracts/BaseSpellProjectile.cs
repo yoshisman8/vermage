@@ -31,7 +31,7 @@ namespace vermage.Projectiles.Abstracts
         {
             if (info.Damage > 0)
             {
-                VerOwner.AddMana(Color, 0.05f);
+                VerOwner.AddMana(Color, 0.10f);
                 VerOwner.ProcessOnHitWithSpell(Projectile, target, info, info.Damage);
             }
         }
@@ -39,7 +39,7 @@ namespace vermage.Projectiles.Abstracts
         {
             if (damageDone > 0)
             {
-                VerOwner.AddMana(Color, 0.05f);
+                VerOwner.AddMana(Color, 0.10f);
                 VerOwner.ProcessOnHitWithSpell(Projectile, target, hit, damageDone);
             }
         }

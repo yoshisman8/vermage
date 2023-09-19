@@ -8,7 +8,7 @@ namespace vermage.Buffs.Spells
         public override void ConfigureSpell()
         {
             CastingTime = 1.5f;
-            Damage = new(150f, 1f);
+            Damage = new(1.5f, 1f);
             ManaCost = 18;
             Knockback = new(1f, 1f);
             Velocity = new(7f);

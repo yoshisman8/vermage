@@ -14,7 +14,7 @@ namespace vermage.Systems.Handlers
 {
     public class VerUI : ModSystem
     {
-        internal ManaBarUIState ManaBar;
+        internal RapierGuageUIState ManaBar;
         internal CastingGaugeUIState CastingBar;
 
         private UserInterface _ManaInterface;
@@ -31,7 +31,7 @@ namespace vermage.Systems.Handlers
 
             if (Main.netMode != NetmodeID.Server)
             {
-                ManaBar = new ManaBarUIState();
+                ManaBar = new RapierGuageUIState();
                 ManaBar.Activate();
 
                 _ManaInterface = new UserInterface();

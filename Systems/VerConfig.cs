@@ -20,28 +20,28 @@ namespace vermage.Systems
         [Header("$Mods.vermage.Configs.Headers.CastingBar")]
         [LabelKey("$Mods.vermage.Configs.CastBarX.DisplayName")]
         [TooltipKey("$Mods.vermage.Configs.CastBarX.Tooltip")]
-        [DefaultValue(0.50104603f)]
+        [DefaultValue(0.53f)]
         [Range(0f, 1f)]
         public float CastBarX { get; set; }
 
         [LabelKey("$Mods.vermage.Configs.CastBarY.DisplayName")]
         [TooltipKey("$Mods.vermage.Configs.CastBarY.Tooltip")]
         [Range(0f, 1f)]
-        [DefaultValue(0.54112984f)]
+        [DefaultValue(0.57f)]
         public float CastBarY { get; set; }
 
         [Header("$Mods.vermage.Configs.Headers.RapierGauge")]
         [LabelKey("$Mods.vermage.Configs.RapierGaugeX.DisplayName")]
         [TooltipKey("$Mods.vermage.Configs.RapierGaugeX.Tooltip")]
-        [DefaultValue(0.50104603f)]
         [Range(0f, 1f)]
+        [DefaultValue(0.56f)]
         public float RapierGaugeX { get; set; }
 
 
         [LabelKey("$Mods.vermage.Configs.RapierGaugeY.DisplayName")]
         [TooltipKey("$Mods.vermage.Configs.RapierGaugeY.Tooltip")]
         [Range(0f, 1f)]
-        [DefaultValue(0.54112984f)]
+        [DefaultValue(0.01f)]
         public float RapierGaugeY { get; set; }
 
         [Header("$Mods.vermage.Configs.Headers.MateriaSlots")]
@@ -71,7 +71,7 @@ namespace vermage.Systems
         {
             return new(Main.screenWidth * MateriaSlotsX, Main.screenHeight * MateriaSlotsY);
         }
-        public Vector2 GetManaGaugePosition()
+        public Vector2 GetRapierGaugePosition()
         {
             return new(Main.screenWidth * RapierGaugeX, Main.screenHeight * RapierGaugeY);
         }

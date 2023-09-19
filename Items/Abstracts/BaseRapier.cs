@@ -58,9 +58,6 @@ namespace vermage.Items.Abstracts
             if (!vplayer.HasSpellUnloked("vermage/Jolt"))
             {
                 vplayer.UnlockSpell("vermage/Jolt");
-                vplayer.Slot1 = "vermage/Jolt";
-                vplayer.SelectedSlot = 1;
-                Main.NewText(Language.GetTextValue("Mods.vermage.Messages.UnlockMessage", vermage.Spells["vermage/Jolt"].Name.Value));
             }
 
             Item.autoReuse = player.autoReuseGlove;
@@ -112,7 +109,7 @@ namespace vermage.Items.Abstracts
 
                     verPlayer.AddMana(ManaColor.Red, -1);
 
-                    Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, (int)Behavior.EnchantedSwing, Item.useAnimation);
+                    Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, player.whoAmI, (int)Behavior.EnchantedSwing, Item.useAnimation);
                 }
                 else
                 {
@@ -129,7 +126,7 @@ namespace vermage.Items.Abstracts
 
                     verPlayer.AddMana(ManaColor.Red, -1);
 
-                    Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, (int)Behavior.EnchantedThrust, Item.useAnimation);
+                    Projectile.NewProjectileDirect(source, position, velocity, RapierData.RapierProjectile, damage, knockback, player.whoAmI, (int)Behavior.EnchantedThrust, Item.useAnimation);
                 }
                 else
                 {

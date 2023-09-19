@@ -9,7 +9,7 @@ namespace vermage.Buffs.Spells
 {
     public abstract class BaseSpell : ModBuff
     {
-        public virtual LocalizedText UnlockHint => Language.GetText($"Mods.{Mod.Name}.Buffs.{Name}.UnlockHint");
+        public virtual LocalizedText UnlockHint => this.GetLocalization("UnlockHint");
         public ManaColor Color { get; set; }
         public int Tier { get; set; } = 1;
         public int ProjectileType { get; set; }
@@ -41,7 +41,7 @@ namespace vermage.Buffs.Spells
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = false;
-            
+
             ConfigureSpell();
 
             vermage.Spells.Add(FullName, SpellData);

@@ -14,6 +14,7 @@ using Terraria;
 using Terraria.Net;
 using Terraria.ID;
 using vermage.Systems.Utilities;
+using System.Drawing.Text;
 
 namespace vermage.UI
 {
@@ -31,6 +32,9 @@ namespace vermage.UI
         private CastingBar Bar;
         private CastingTimer Timer;
 
+        private const string Background = "vermage/Assets/UI/CastingBarBackground";
+        private const string Foreground = "vermage/Assets/UI/CastingBarForeground";
+        private const string Frame = "vermage/Assets/UI/CastingIconFrame";
         public override void OnInitialize()
         {
             base.OnInitialize();
@@ -40,7 +44,7 @@ namespace vermage.UI
 
             Color = def;
 
-            Container = new(ModContent.Request<Texture2D>("vermage/Assets/UI/CastingBarBackground"));
+            Container = new(ModContent.Request<Texture2D>(Background));
             Container.Width.Set(200f,0f);
             Container.Height.Set(50f, 0f);
 
@@ -52,7 +56,7 @@ namespace vermage.UI
 
             Container.Append(Bar);
 
-            CastingGauge = new(ModContent.Request<Texture2D>("vermage/Assets/UI/CastingBarForeground"));
+            CastingGauge = new(ModContent.Request<Texture2D>(Foreground));
             CastingGauge.Width.Set(200f, 0f);
             CastingGauge.Height.Set(50f, 0f);
 
@@ -74,7 +78,7 @@ namespace vermage.UI
             SpellIcon.Left.Set(-52f, 0f);
             SpellIcon.Top.Set(1f, 0f);
 
-            SpellIconFrame = new(ModContent.Request<Texture2D>("vermage/Assets/UI/CastingIconFrame"));
+            SpellIconFrame = new(ModContent.Request<Texture2D>(Frame));
             SpellIconFrame.Left.Set(-4f, 0f);
             SpellIconFrame.Top.Set(-4f, 0f);
             SpellIcon.Append(SpellIconFrame);

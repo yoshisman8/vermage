@@ -23,7 +23,7 @@ namespace vermage.UI.Components
         {
             Cache = path;
             var texture = ModContent.Request<Texture2D>(path);
-            
+
             SetImage(texture);
         }
         public override void Update(GameTime gameTime)
@@ -32,20 +32,17 @@ namespace vermage.UI.Components
 
             if (Main.netMode != NetmodeID.Server)
             {
-                if (Main.netMode != NetmodeID.Server)
+                Player player = Main.CurrentPlayer;
+                if (player.active && !player.dead)
                 {
-                    Player player = Main.CurrentPlayer;
-                    if (player.active && !player.dead)
+                    VerPlayer vPlayer = player.GetModPlayer<VerPlayer>();
+
+                    if (!vPlayer.CastingSpell.HasValue) return;
+
+                    if (vPlayer.CastingSpell.Value.IconPath != Cache)
                     {
-                        VerPlayer vPlayer = player.GetModPlayer<VerPlayer>();
-
-                        if (!vPlayer.CastingSpell.HasValue) return;
-
-                        if (vPlayer.CastingSpell.Value.IconPath != Cache)
-                        {
-                            SetImage(ModContent.Request<Texture2D>(vPlayer.CastingSpell.Value.IconPath));
-                            Cache = vPlayer.CastingSpell.Value.IconPath;
-                        }
+                        SetImage(ModContent.Request<Texture2D>(vPlayer.CastingSpell.Value.IconPath));
+                        Cache = vPlayer.CastingSpell.Value.IconPath;
                     }
                 }
             }

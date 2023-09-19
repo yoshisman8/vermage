@@ -17,6 +17,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.UI;
 using Terraria.GameInput;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Net;
@@ -41,7 +42,7 @@ namespace vermage.Systems
         }
         public void AddMana(ManaColor Type, float amount)
         {
-            if (amount > 0 && Type == ManaColor.Red && RefundRedMana()) return;
+            if (amount < 0 && Type == ManaColor.Red && RefundRedMana()) return;
 
             switch (Type)
             {
@@ -118,6 +119,10 @@ namespace vermage.Systems
             if (UnlockedSpells.ContainsKey(id))
             {
                 UnlockedSpells[id] = true;
+                if(vermage.Spells.TryGetValue(id, out var data))
+                {
+                    Main.NewText(Language.GetTextValue("Mods.vermage.Messages.UnlockMessage" ,data.Name.Value));
+                }
             }
         }
 
@@ -200,6 +205,7 @@ namespace vermage.Systems
             {
                 LastRapierUsage = DateTime.Now;
             }
+            ProcessPassiveUnlocks();
         }
         
         public override void ProcessTriggers(TriggersSet triggersSet)
@@ -271,7 +277,33 @@ namespace vermage.Systems
                 CastingTimer = 0;
             }
         }
-
+        public void ProcessPassiveUnlocks()
+        {
+            if (Player.ZoneUnderworldHeight && !HasSpellUnloked($"{Mod.Name}/Fire"))
+            {
+                UnlockSpell($"{Mod.Name}/Fire");
+            }
+            if (Player.ZoneBeach && !HasSpellUnloked($"{Mod.Name}/Water"))
+            {
+                UnlockSpell($"{Mod.Name}/Water");
+            }
+            if (Player.ZoneNormalCaverns && !HasSpellUnloked($"{Mod.Name}/Stone"))
+            {
+                UnlockSpell($"{Mod.Name}/Stone");
+            }
+            if (Player.ZoneSkyHeight && !HasSpellUnloked($"{Mod.Name}/Aero"))
+            {
+                UnlockSpell($"{Mod.Name}/Aero");
+            }
+            if (Player.ZoneRain && !HasSpellUnloked($"{Mod.Name}/Thunder"))
+            {
+                UnlockSpell($"{Mod.Name}/Thunder");
+            }
+            if (Player.ZoneSnow && !HasSpellUnloked($"{Mod.Name}/Blizzard"))
+            {
+                UnlockSpell($"{Mod.Name}/Blizzard");
+            }
+        }
         public override void ResetEffects()
         {
             if (RapierData == null)
@@ -338,7 +370,7 @@ namespace vermage.Systems
             Vector2 direction = Player.DirectionTo(Main.MouseWorld);
             direction.Normalize();
 
-            Projectile.NewProjectileDirect(Player.GetSource_ItemUse(rapier.Item), FocusPosition ?? Player.Center, direction * spell.Velocity, spell.ProjectileType, damage, knockback, Player.whoAmI);
+            Projectile.NewProjectileDirect(Player.GetSource_ItemUse(rapier.Item), FocusPosition ?? Player.Center, direction * spell.Velocity, spell.ProjectileType, damage, knockback, Player.whoAmI,(int)spell.Color);
             ProcessOnCast(spell);
         }
         public void ProcessOnCast(SpellData spell)

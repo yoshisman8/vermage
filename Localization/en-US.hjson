@@ -103,16 +103,30 @@ Mods: {
 			Jolt: {
 				DisplayName: Jolt
 				Description: Mods.vermage.Buffs.Jolt.Description
+				UnlockHint: Mods.vermage.Buffs.Jolt.UnlockHint
 			}
 
 			Fire: {
 				DisplayName: Fire
 				Description: Mods.vermage.Buffs.Fire.Description
+				UnlockHint: Mods.vermage.Buffs.Fire.UnlockHint
 			}
 
 			RedFlames: {
 				DisplayName: Red Flames
 				Description: Mods.vermage.Buffs.RedFlames.Description
+			}
+
+			Aero: {
+				UnlockHint: Mods.vermage.Buffs.Aero.UnlockHint
+				DisplayName: Aero
+				Description: Mods.vermage.Buffs.Aero.Description
+			}
+
+			Blizzard: {
+				UnlockHint: Mods.vermage.Buffs.Blizzard.UnlockHint
+				DisplayName: Blizzard
+				Description: Mods.vermage.Buffs.Blizzard.Description
 			}
 		}
 
