@@ -44,6 +44,7 @@ namespace vermage.Items.Abstracts
             Item.noUseGraphic = true;
             Item.noMelee = true;
             Item.autoReuse = false;
+            Item.shootSpeed = 1f;
         }
         public override void SetStaticDefaults()
         {

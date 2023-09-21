@@ -76,14 +76,11 @@ namespace vermage.Projectiles.Rapiers
             {
                 case Behavior.Swing:
                     Projectile.timeLeft = TotalTime;
-                    StartPosition = Projectile.Center;
                     Projectile.scale = 1.2f;
                     break;
 
                 case Behavior.Thrust:
                     Projectile.timeLeft = TotalTime;
-                    StartPosition = Projectile.Center;
-                    MousePosition = VerOwner.CursorPosition;
                     break;
 
                 default:
@@ -182,13 +179,13 @@ namespace vermage.Projectiles.Rapiers
 
             Owner.direction = Math.Sign(VerOwner.CursorPosition.X - Owner.Center.X);
             
-            if (VerOwner.RapierData.Value.GuardProjectile != -1)
-            {
-                if (Owner.ownedProjectileCounts[VerOwner.RapierData.Value.GuardProjectile] < 1 && VerOwner.RapierData.Value.GuardProjectile != -1)
-                {
-                    Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, new Vector2(0), VerOwner.RapierData.Value.GuardProjectile, 0, 0, Owner.whoAmI, Projectile.whoAmI);
-                }
-            }
+            //if (VerOwner.RapierData.Value.GuardProjectile != -1)
+            //{
+            //    if (Owner.ownedProjectileCounts[VerOwner.RapierData.Value.GuardProjectile] < 1 && VerOwner.RapierData.Value.GuardProjectile != -1)
+            //    {
+            //        Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, new Vector2(0), VerOwner.RapierData.Value.GuardProjectile, 0, 0, Owner.whoAmI, Projectile.whoAmI);
+            //    }
+            //}
         }
         public virtual void UpdateIdle()
         {
@@ -248,25 +245,24 @@ namespace vermage.Projectiles.Rapiers
             }
 
             Vector2 PlayerCenter = Owner.RotatedRelativePoint(Owner.MountedCenter);
-            Vector2 Direction = PlayerCenter.DirectionTo(StartPosition);
-            Direction.Normalize();
+            Vector2 StartingPosition = PlayerCenter + (new Vector2(0, -1) * SizeAverage() * 1f);
+            
+            float progress = VerUtils.Easings.OutExpo(AnimationPercent());
 
-            Vector2 NormVel = Projectile.velocity.SafeNormalize(new Vector2(0));
-            Vector2 PivotCenter = PlayerCenter + (NormVel * Projectile.Size.X * 0.89f) + Direction;
+            float degress = MathHelper.ToRadians(180f * Projectile.direction * progress);
 
-
-            float rawProg = AnimationPercent();
-
-            float progress = VerUtils.Easings.OutExpo(rawProg);
-
-            float degress = MathHelper.ToRadians(180f * progress);
-
-            Vector2 hand = PivotCenter + (Direction * Projectile.Size.X * 0.25f) * Projectile.direction;
-
-            Vector2 rotated = hand.RotatedBy(MathHelper.ToRadians(-90f * Projectile.direction) + degress * Projectile.direction, PlayerCenter);
+            Projectile.Center = StartingPosition.RotatedBy(degress, PlayerCenter);
 
 
-            Projectile.Center = rotated;
+            //Vector2 Direction = PlayerCenter.DirectionTo(StartPosition);
+            //Direction.Normalize();
+
+            //Vector2 NormVel = Projectile.velocity.SafeNormalize(new Vector2(0));
+            //Vector2 PivotCenter = PlayerCenter + (NormVel * Projectile.Size.X * 0.89f) + Direction;
+
+            //Vector2 hand = PivotCenter + (Direction * Projectile.Size.X * 0.25f) * Projectile.direction;
+
+            //Vector2 rotated = hand.RotatedBy(MathHelper.ToRadians(-90f * Projectile.direction) + degress * Projectile.direction, PlayerCenter);
 
             DrawOriginOffsetX = 0;
             DrawOriginOffsetY = (int)(-Projectile.Size.Y * 0.5f);
@@ -291,41 +287,43 @@ namespace vermage.Projectiles.Rapiers
             }
 
             Vector2 PlayerCenter = Owner.RotatedRelativePoint(Owner.MountedCenter);
-            Vector2 Direction = StartPosition.DirectionTo(MousePosition);
-            Direction.Normalize();
+            
 
-            Vector2 PivotCenter = PlayerCenter + (Direction * ThrusProjectileSize() * 0.25f) + Direction;
-            Vector2 hand = PivotCenter + (Direction * ThrusProjectileSize() * 0.15f);
+            //Vector2 Direction = StartPosition.DirectionTo(MousePosition);
+            //Direction.Normalize();
 
-            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, (Owner.Center -
-            new Vector2(hand.X, (hand.Y + DrawOriginOffsetY) + 20)).ToRotation() + MathHelper.PiOver2);
+            //Vector2 PivotCenter = PlayerCenter + (Direction * ThrusProjectileSize() * 0.25f) + Direction;
+            //Vector2 hand = PivotCenter + (Direction * ThrusProjectileSize() * 0.15f);
+
+            
 
             Projectile.scale = GetThrusScale(AnimationPercent());
-            Projectile.Size = Projectile.Size + new Vector2(Projectile.scale);
+            //Projectile.Size = Projectile.Size + new Vector2(Projectile.scale);
 
-            DrawOriginOffsetY = (int)-((1f - Projectile.scale) * ThrusProjectileSize() * 0.13f);
+            DrawOriginOffsetY = (int)-((1f - Projectile.scale) * SizeAverage() * 0.13f);
 
-            float progress = VerUtils.Easings.InQuint(AnimationPercent() + 0.2f);
-            Projectile.Center = StartPosition + (Direction * (Projectile.Size.X * (1f * progress)));
-        }
-        private int ThrusProjectileSize()
-        {
-            return (int)Math.Floor((Projectile.Size.X + Projectile.Size.Y) / 2);
-        }
-        private int GetThrusAlpha(float progress)
-        {
-            return Utils.Clamp((int)(progress * 2 * 255), 0, 255);
+            float progress = VerUtils.Easings.OutExpo(AnimationPercent());
+            Projectile.Center = PlayerCenter + (Projectile.velocity * (Projectile.Size.X * (1f * progress)));
+            Projectile.rotation = (Projectile.velocity.ToRotation() +  MathHelper.ToRadians(45f)) * Projectile.spriteDirection;
+
+            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, (Owner.Center -
+                new Vector2(Projectile.Center.X, (Projectile.Center.Y + DrawOriginOffsetY) + 20)
+                ).ToRotation() + MathHelper.PiOver2);
+
+            //Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, (Owner.Center -
+            //new Vector2(hand.X, (hand.Y + DrawOriginOffsetY) + 20)).ToRotation() + MathHelper.PiOver2);
         }
         private float GetThrusScale(float progress)
         {
-            return Utils.Clamp(VerUtils.Easings.OutCirc(progress) * 2f, 1f, 2f);
+            return Utils.Clamp(VerUtils.Easings.OutExpo(progress) * 1.25f, 1f, 1.25f);
         }
         #endregion
 
         private float AnimationPercent()
         {
-            return Utils.Clamp(Timer/TotalTime, 0f, 1f);
+            return Utils.Clamp<float>((float)Timer / (float)TotalTime, 0f,1f);
         }
+        private float SizeAverage() => (Projectile.Size.X + Projectile.Size.Y) / 2f;
         public override bool ShouldUpdatePosition() => false;
         public override bool? CanCutTiles() => Behavior != Behavior.Idle;
         public override bool? CanDamage() => Behavior != Behavior.Idle;
