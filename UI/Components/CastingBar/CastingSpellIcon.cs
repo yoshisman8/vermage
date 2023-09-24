@@ -14,12 +14,12 @@ using vermage.Items.Abstracts;
 using vermage.Systems;
 using vermage.Systems.Utilities;
 
-namespace vermage.UI.Components
+namespace vermage.UI.Components.CastingBar
 {
-    public class SpellIcon : UIImage
+    public class CastingSpellIcon : UIImage
     {
         private string Cache;
-        public SpellIcon(string path) : base(ModContent.Request<Texture2D>(path))
+        public CastingSpellIcon(string path) : base(ModContent.Request<Texture2D>(path))
         {
             Cache = path;
             var texture = ModContent.Request<Texture2D>(path);

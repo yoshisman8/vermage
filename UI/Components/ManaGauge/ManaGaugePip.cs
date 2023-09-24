@@ -11,9 +11,9 @@ using Terraria;
 using Terraria.GameContent.UI.Elements;
 using vermage.Systems;
 
-namespace vermage.UI.Components
+namespace vermage.UI.Components.ManaGauge
 {
-    public class ManaPip : UIImage
+    public class ManaGaugePip : UIImage
     {
         private int NumberValue;
         private ManaColor ManaColor;
@@ -24,7 +24,7 @@ namespace vermage.UI.Components
         VerPlayer player => Main.CurrentPlayer.GetModPlayer<VerPlayer>();
         float ManaQuantity => ManaColor == ManaColor.Black ? player.BlackMana : player.WhiteMana;
 
-        public ManaPip(Asset<Texture2D> texture, int number, ManaColor color) : base(texture)
+        public ManaGaugePip(Asset<Texture2D> texture, int number, ManaColor color) : base(texture)
         {
             NumberValue = number;
             ManaColor = color;
@@ -54,7 +54,7 @@ namespace vermage.UI.Components
             {
                 Color = Color.Transparent;
             }
-            else if (ManaQuantity > NumberValue) 
+            else if (ManaQuantity > NumberValue)
             {
                 if (player.GetCombinedMana() >= NumberValue + 1) Color = new(224, 16, 9, GetAlpha());
                 else Color = BaseColor with { A = GetAlpha() };

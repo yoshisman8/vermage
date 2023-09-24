@@ -16,14 +16,17 @@ namespace vermage.Systems.Handlers
     {
         internal RapierGuageUIState ManaBar;
         internal CastingGaugeUIState CastingBar;
+        internal SpellbookUIState Spellbook;
 
         private UserInterface _ManaInterface;
         private UserInterface _CastingBar;
+        private UserInterface _Spellbook;
         public override void UpdateUI(GameTime gameTime)
         {
             base.UpdateUI(gameTime);
             _ManaInterface?.Update(gameTime);
             _CastingBar?.Update(gameTime);
+            _Spellbook?.Update(gameTime);
         }
         public override void Load()
         {
@@ -42,6 +45,12 @@ namespace vermage.Systems.Handlers
 
                 _CastingBar = new();
                 _CastingBar.SetState(CastingBar);
+
+                Spellbook = new SpellbookUIState();
+                Spellbook.Activate();
+
+                _Spellbook = new();
+                _Spellbook.SetState(Spellbook);
             }
         }
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -61,6 +70,19 @@ namespace vermage.Systems.Handlers
                     delegate
                     {
                         _CastingBar?.Draw(Main.spriteBatch, new GameTime());
+                        return true;
+                    },
+                InterfaceScaleType.UI));
+
+                
+            }
+            int inventoryIndex = layers.FindIndex(a => a.Name.Equals("Vanilla: Inventory"));
+            if (inventoryIndex != -1)
+            {
+                layers.Insert(inventoryIndex, new LegacyGameInterfaceLayer("vermage: Spellbook",
+                    delegate
+                    {
+                        _Spellbook?.Draw(Main.spriteBatch, new GameTime());
                         return true;
                     },
                 InterfaceScaleType.UI));

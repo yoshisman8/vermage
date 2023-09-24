@@ -49,13 +49,6 @@ namespace vermage.Items.Rapiers
         {
             base.HoldItem(player);
             VerPlayer vplayer = player.GetModPlayer<VerPlayer>();
-
-            if (!vplayer.HasSpellUnloked("vermage/Fire"))
-            {
-                vplayer.UnlockSpell("vermage/Fire");
-                vplayer.Slot2 = "vermage/Fire";
-                Main.NewText(Language.GetTextValue("Mods.vermage.Messages.UnlockMessage", vermage.Spells["vermage/Fire"].Name.Value));
-            }
         }
         public override void AddRecipes()
         {

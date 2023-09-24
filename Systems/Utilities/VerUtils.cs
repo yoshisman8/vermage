@@ -131,7 +131,7 @@ namespace vermage.Systems.Utilities
 
             return closestPlayer.ToArray();
         }
-
+        public static bool IsNullOrEmpty(this string value) => string.IsNullOrEmpty(value);
         public static class Easings
         {
             public static float Linear(float t) => t;

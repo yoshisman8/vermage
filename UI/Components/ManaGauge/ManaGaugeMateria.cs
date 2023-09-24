@@ -11,14 +11,14 @@ using Terraria.GameContent.UI.Elements;
 using vermage.Items.Materia;
 using vermage.Systems;
 
-namespace vermage.UI.Components
+namespace vermage.UI.Components.ManaGauge
 {
-    public class MateriaPip : UIImage
+    public class ManaGaugeMateria : UIImage
     {
         private int Slot;
         VerPlayer player => Main.CurrentPlayer.GetModPlayer<VerPlayer>();
 
-        public MateriaPip(Asset<Texture2D> texture, int slot) : base(texture)
+        public ManaGaugeMateria(Asset<Texture2D> texture, int slot) : base(texture)
         {
             Slot = slot;
         }

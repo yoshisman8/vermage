@@ -28,6 +28,8 @@ using vermage.Projectiles.Rapiers;
 using vermage.Systems.Events;
 using vermage.Systems.Handlers;
 using vermage.Systems.Utilities;
+using vermage.UI;
+using vermage.UI.Components.Spellbook;
 
 namespace vermage.Systems
 {
@@ -66,48 +68,31 @@ namespace vermage.Systems
         }
 
         public Dictionary<string, bool> UnlockedSpells = new();
+        public List<string> EquippedSpells = new();
+        public int SelectedSlot = 0;
 
 
-        public string Slot1;
-        public string Slot2;
-        public int SelectedSlot = 1;
         public bool WasCasting;
         public void CycleSlots()
         {
-            if (SelectedSlot == 1) SelectedSlot = 2;
-            else SelectedSlot = 1;
+            if (SelectedSlot + 1 >= EquippedSpells.Count) SelectedSlot = 0;
+            else SelectedSlot++;
         }
         public SpellData? GetCurrentSpell()
         {
-            if (SelectedSlot == 1)
+            if (EquippedSpells.Count == 0) return null;
+            else if (SelectedSlot >= EquippedSpells.Count)
             {
-                if (GetSpellInSlot(1).HasValue) return GetSpellInSlot(1).Value;
-                else if (GetSpellInSlot(2).HasValue) return GetSpellInSlot(2).Value;
-                else return null;
+                SelectedSlot = EquippedSpells.Count - 1;
+                return vermage.Spells[EquippedSpells.Last()];
             }
-            else
-            {
-                if (GetSpellInSlot(2).HasValue) return GetSpellInSlot(2).Value;
-                else if (GetSpellInSlot(1).HasValue) return GetSpellInSlot(1).Value;
-                else return null;
-            }
+            else return vermage.Spells[EquippedSpells[SelectedSlot]];
         }
         public SpellData? GetSpellInSlot(int Slot)
         {
-            Slot = Utils.Clamp(Math.Abs(Slot), 1, 2);
-
-            if (Slot == 1)
-            {
-                if (string.IsNullOrEmpty(Slot1)) return null;
-                else if (vermage.Spells.TryGetValue(Slot1, out SpellData value)) return value;
-                else return null;
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(Slot2)) return null;
-                else if (vermage.Spells.TryGetValue(Slot2, out SpellData value)) return value;
-                else return null;
-            }
+            if (Slot < 0) return null;
+            if (Slot >= EquippedSpells.Count) return null;
+            else return vermage.Spells[EquippedSpells[Slot]];
         }
         public bool HasSpellUnloked(string ID)
         {
@@ -122,6 +107,7 @@ namespace vermage.Systems
                 if(vermage.Spells.TryGetValue(id, out var data))
                 {
                     Main.NewText(Language.GetTextValue("Mods.vermage.Messages.UnlockMessage" ,data.Name.Value));
+                    Main.NewText(Language.GetTextValue("Mods.vermage.Messages.OpenSpellbook", ToggleSpellbook.GetAssignedKeys()?.FirstOrDefault() ?? "N/A"));
                 }
             }
         }
@@ -174,9 +160,18 @@ namespace vermage.Systems
                 if (tag.ContainsKey($"{sp.Key}/unlock")) UnlockedSpells.Add(sp.Key, tag.GetBool($"{sp.Key}/unlock"));
                 else UnlockedSpells.Add(sp.Key, false);
             }
+            string[] Equipped = new string[5];
+            if (tag.ContainsKey($"{Mod.Name}/Slot1")) Equipped[0] = tag.GetString($"{Mod.Name}/Slot1");
+            if (tag.ContainsKey($"{Mod.Name}/Slot2")) Equipped[1] = tag.GetString($"{Mod.Name}/Slot2");
+            if (tag.ContainsKey($"{Mod.Name}/Slot3")) Equipped[2] = tag.GetString($"{Mod.Name}/Slot3");
+            if (tag.ContainsKey($"{Mod.Name}/Slot4")) Equipped[3] = tag.GetString($"{Mod.Name}/Slot4");
+            if (tag.ContainsKey($"{Mod.Name}/Slot5")) Equipped[4] = tag.GetString($"{Mod.Name}/Slot5");
 
-            if (tag.ContainsKey($"{Mod.Name}/Slot1")) Slot1 = tag.GetString($"{Mod.Name}/Slot1");
-            if (tag.ContainsKey($"{Mod.Name}/Slot2")) Slot2 = tag.GetString($"{Mod.Name}/Slot2");
+            foreach(var sp in Equipped)
+            {
+                if (!sp.IsNullOrEmpty() && vermage.Spells.ContainsKey(sp)) EquippedSpells.Add(sp);
+            }
+
             if (tag.ContainsKey($"{Mod.Name}/SelectedSlot")) SelectedSlot = tag.GetAsInt($"{Mod.Name}/SelectedSlot");
             if (tag.ContainsKey($"{Mod.Name}/UnlockedMateriaSlot2")) UnlockedMateriaSlot2 = tag.GetBool($"{Mod.Name}/UnlockedMateriaSlot2");
             if (tag.ContainsKey($"{Mod.Name}/UnlockedMateriaSlot3")) UnlockedMateriaSlot3 = tag.GetBool($"{Mod.Name}/UnlockedMateriaSlot3");
@@ -187,8 +182,11 @@ namespace vermage.Systems
             {
                 tag.Add($"{sp.Key}/unlock", sp.Value);
             }
-            tag.Add($"{Mod.Name}/Slot1", Slot1);
-            tag.Add($"{Mod.Name}/Slot2", Slot2);
+            for (int  i = 0; i < 5; i++)
+            {
+                if (i >= EquippedSpells.Count) tag.Remove($"{Mod.Name}/Slot{i}");
+                else tag.Add($"{Mod.Name}/Slot{i}", EquippedSpells[i]);
+            }
             tag.Add($"{Mod.Name}/SelectedSlot", SelectedSlot);
             tag.Add($"{Mod.Name}/UnlockedMateriaSlot2", UnlockedMateriaSlot2);
             tag.Add($"{Mod.Name}/UnlockedMateriaSlot3", UnlockedMateriaSlot3);
@@ -206,10 +204,27 @@ namespace vermage.Systems
                 LastRapierUsage = DateTime.Now;
             }
             ProcessPassiveUnlocks();
+            if (SpellbookUIState.Shown) Player.SetItemTime(10);
         }
         
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
+            if (ToggleSpellbook.JustPressed)
+            {
+                if (SpellbookUIState.Shown)
+                {
+                    SpellbookUIState.Shown = false;
+                    SoundEngine.PlaySound(SoundID.MenuClose);
+                }
+                else
+                {
+                    SpellbookUIState.Rebuild();
+                    SpellbookUIState.Shown = true;
+                    SoundEngine.PlaySound(SoundID.MenuOpen);
+                }
+                SelectedSlot = 0;
+            }
+
             if (SwapSpells.JustPressed)
             {
                 CycleSlots();
@@ -226,6 +241,8 @@ namespace vermage.Systems
         }
         public void HandleCasting()
         {
+            if (SpellbookUIState.Shown) return;
+
             if (Player.ItemTimeIsZero && !CastingSpell.HasValue && GetCurrentSpell().HasValue && RapierBehavior == Behavior.Idle && MouseRightCurrent()) // If MouseRight was JUST pressed and the player is not casting
             {
                 if (Player.CheckMana(GetCurrentSpell().Value.GetManaCost(Player, Rapier)))

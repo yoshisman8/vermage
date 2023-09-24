@@ -45,7 +45,11 @@ Mods: {
 			}
 		}
 
-		Messages.UnlockMessage: You have unlocked the spell {0}!
+		Messages: {
+			UnlockMessage: You have unlocked the spell {0}!
+			OpenSpellbook: Press [[c/FCEE72:{0}]] to open your Spellbook!
+		}
+
 		DamageClasses.VermilionDamageClass.DisplayName: Vermilion Damage
 
 		Tooltips: {
@@ -53,6 +57,15 @@ Mods: {
 			Inheritance: Inherits from [c/C4700F:Melee] and [c/C1197B:Magic] Damage.
 			InheritanceThorium: Inherits from [c/C4700F:Melee], [c/C1197B:Magic] and [c/FCEE72:Radiant] Damage.
 			MateriaSlot: Materia Slot
+			CastingTime: Base time in seconds to cast this spell.
+			ManaCost: Blue mana required to cast this spell.
+			Damage: Percent of your Rapier's damage dealt per hit.
+			Knockback: Percent of your Rapier's knockback dealt per hit.
+			Equip: Equip
+			Unequip: Unequip {0}
+			GenerateBlack: Generates Black Mana on hit.
+			GenerateWhite: Generates White Mana on hit.
+			GenerateRed: Generates both Black and White mana on hit.
 		}
 
 		Keybinds: {
@@ -102,14 +115,22 @@ Mods: {
 		Buffs: {
 			Jolt: {
 				DisplayName: Jolt
-				Description: Mods.vermage.Buffs.Jolt.Description
-				UnlockHint: Mods.vermage.Buffs.Jolt.UnlockHint
+				Description: Fires a seeking jolt of magic.
+				UnlockHint:
+					'''
+					Wield your first Rapier and perhaps this magic
+					will become obvious to you.
+					'''
 			}
 
 			Fire: {
 				DisplayName: Fire
-				Description: Mods.vermage.Buffs.Fire.Description
-				UnlockHint: Mods.vermage.Buffs.Fire.UnlockHint
+				Description:
+					'''
+					Launches a deadly fire bolt.
+					Ignites foes on contact.
+					'''
+				UnlockHint: Only by enduring the heat of the underworld would you find the inspiration for this spell.
 			}
 
 			RedFlames: {
@@ -118,15 +139,19 @@ Mods: {
 			}
 
 			Aero: {
-				UnlockHint: Mods.vermage.Buffs.Aero.UnlockHint
 				DisplayName: Aero
-				Description: Mods.vermage.Buffs.Aero.Description
+				UnlockHint: Perhaps reaching what lies beyond the skies will inspire you learn this spell.
+				Description:
+					'''
+					Fires a fast, cutting gale.
+					Grants a speed bonus to you and allies on hit.
+					'''
 			}
 
 			Blizzard: {
-				UnlockHint: Mods.vermage.Buffs.Blizzard.UnlockHint
 				DisplayName: Blizzard
-				Description: Mods.vermage.Buffs.Blizzard.Description
+				Description: Launches an extremely fast shard of ice.
+				UnlockHint: Perhaps a visit to a frigid place will give you the inspiration needed to learn this spell.
 			}
 		}
 

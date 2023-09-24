@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 
-namespace vermage.UI.Components
+namespace vermage.UI.Components.CastingBar
 {
     public class CastingTimer : UIText
     {
@@ -17,7 +17,7 @@ namespace vermage.UI.Components
         public CastingTimer(string text, float textScale = 1, bool large = false) : base(text, textScale, large)
         {
         }
-        
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -38,7 +38,7 @@ namespace vermage.UI.Components
             {
                 return;
             }
-            
+
         }
     }
 }

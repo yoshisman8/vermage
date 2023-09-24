@@ -9,7 +9,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ModLoader;
 using Terraria.UI;
 using vermage.Systems;
-using vermage.UI.Components;
+using vermage.UI.Components.ManaGauge;
 
 namespace vermage.UI
 {
@@ -20,13 +20,13 @@ namespace vermage.UI
         private const string GaugePipW = "vermage/Assets/UI/RapierGaugeSegmentW";
         private const string Materia = "vermage/Assets/UI/MateriaRapierGauge";
 
-        public RapierGaugeContainer Container;
-        public List<ManaPip> BlackPips = new();
-        public List<ManaPip> WhitePips = new();
-        public MateriaPip MateriaPip1;
-        public MateriaPip MateriaPip2;
-        public MateriaPip MateriaPip3;
-        public SlottedSpellName SpellName;
+        public ManaGaugeContainer Container;
+        public List<ManaGaugePip> BlackPips = new();
+        public List<ManaGaugePip> WhitePips = new();
+        public ManaGaugeMateria MateriaPip1;
+        public ManaGaugeMateria MateriaPip2;
+        public ManaGaugeMateria MateriaPip3;
+        public ManaGaugeSpellName SpellName;
 
         VerPlayer player => Main.CurrentPlayer.GetModPlayer<VerPlayer>();
 
@@ -40,7 +40,7 @@ namespace vermage.UI
 
             for (int i = 0; i < 5; i++)
             {
-                ManaPip pip = new(ModContent.Request<Texture2D>(GaugePipB), i, Systems.ManaColor.Black);
+                ManaGaugePip pip = new(ModContent.Request<Texture2D>(GaugePipB), i, Systems.ManaColor.Black);
                 pip.Width.Set(44, 0f);
                 pip.Height.Set(4, 0f);
                 pip.Left.Set(118 + (50 * i), 0f);
@@ -52,7 +52,7 @@ namespace vermage.UI
 
             for (int i = 0; i < 5; i++)
             {
-                ManaPip pip = new(ModContent.Request<Texture2D>(GaugePipW), i, Systems.ManaColor.White);
+                ManaGaugePip pip = new(ModContent.Request<Texture2D>(GaugePipW), i, Systems.ManaColor.White);
                 pip.Width.Set(44, 0f);
                 pip.Height.Set(4, 0f);
                 pip.Left.Set(118 + (50 * i), 0f);

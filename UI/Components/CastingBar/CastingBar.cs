@@ -11,7 +11,7 @@ using Terraria.ID;
 using vermage.Systems;
 using Terraria.GameContent;
 
-namespace vermage.UI.Components
+namespace vermage.UI.Components.CastingBar
 {
     public class CastingBar : UIElement
     {
@@ -21,7 +21,7 @@ namespace vermage.UI.Components
         }
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            float Quotient = (float)CastingGaugeUIState.CastingProgress / (float)CastingGaugeUIState.CastingTime;
+            float Quotient = CastingGaugeUIState.CastingProgress / (float)CastingGaugeUIState.CastingTime;
 
             float clamp = Utils.Clamp(Quotient, 0f, 1f);
 

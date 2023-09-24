@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 using vermage.Systems;
 using Terraria.GameContent.UI.Elements;
 
-namespace vermage.UI.Components
+namespace vermage.UI.Components.ManaGauge
 {
-    public class RapierGaugeContainer : UIImage
+    public class ManaGaugeContainer : UIImage
     {
-        public RapierGaugeContainer(Asset<Texture2D> texture) : base(texture)
+        public ManaGaugeContainer(Asset<Texture2D> texture) : base(texture)
         {
 
             Vector2 screenPos = VerConfig.Instance.GetRapierGaugePosition();

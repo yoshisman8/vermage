@@ -12,12 +12,12 @@ using Terraria.ModLoader;
 using vermage.Systems;
 using vermage.Systems.Utilities;
 
-namespace vermage.UI.Components
+namespace vermage.UI.Components.CastingBar
 {
-    public class SpellName : UIText
+    public class CastingSpellName : UIText
     {
         public string Cache;
-        public SpellName(string text, float textScale = 1, bool large = false) : base(text, textScale, large)
+        public CastingSpellName(string text, float textScale = 1, bool large = false) : base(text, textScale, large)
         {
             Cache = text;
         }

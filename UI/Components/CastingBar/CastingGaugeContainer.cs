@@ -12,13 +12,13 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using vermage.Systems;
 
-namespace vermage.UI.Components
+namespace vermage.UI.Components.CastingBar
 {
     public class CastingGaugeContainer : UIImage
     {
         public CastingGaugeContainer(Asset<Texture2D> texture) : base(texture)
         {
-            
+
             Vector2 screenPos = VerConfig.Instance.GetCastingBarPosition();
 
             Left.Set(screenPos.X, 0f);
@@ -28,9 +28,9 @@ namespace vermage.UI.Components
         {
             base.Update(gameTime);
             Vector2 screenPos = VerConfig.Instance.GetCastingBarPosition();
-            
-            if(Left.Pixels != screenPos.X) Left.Set(screenPos.X, 0f);
-            if(Top.Pixels != screenPos.Y) Top.Set(screenPos.Y, 0f);
+
+            if (Left.Pixels != screenPos.X) Left.Set(screenPos.X, 0f);
+            if (Top.Pixels != screenPos.Y) Top.Set(screenPos.Y, 0f);
         }
     }
 }

@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using Terraria.ModLoader;
 using Terraria.UI;
 using vermage.Systems;
-using vermage.UI.Components;
 using Terraria;
 using Terraria.Net;
 using Terraria.ID;
 using vermage.Systems.Utilities;
 using System.Drawing.Text;
+using vermage.UI.Components.CastingBar;
 
 namespace vermage.UI
 {
@@ -27,8 +27,8 @@ namespace vermage.UI
         private CastingGaugeContainer Container;
         private UIImage CastingGauge;
         private UIImage SpellIconFrame;
-        private SpellIcon SpellIcon;
-        private SpellName SpellName;
+        private CastingSpellIcon SpellIcon;
+        private CastingSpellName SpellName;
         private CastingBar Bar;
         private CastingTimer Timer;
 

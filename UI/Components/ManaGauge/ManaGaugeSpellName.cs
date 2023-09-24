@@ -10,14 +10,14 @@ using Terraria.DataStructures;
 using Terraria.GameContent.UI.Elements;
 using vermage.Systems;
 
-namespace vermage.UI.Components
+namespace vermage.UI.Components.ManaGauge
 {
-    public class SlottedSpellName : UIText
+    public class ManaGaugeSpellName : UIText
     {
         public string Cache;
-        VerPlayer player => Main.CurrentPlayer.GetModPlayer<VerPlayer>();
+        VerPlayer player => Main.CurrentPlayer?.GetModPlayer<VerPlayer>();
 
-        public SlottedSpellName(string text, float textScale = 1, bool large = false) : base(text, textScale, large)
+        public ManaGaugeSpellName(string text, float textScale = 1, bool large = false) : base(text, textScale, large)
         {
             Cache = text;
         }
@@ -27,7 +27,7 @@ namespace vermage.UI.Components
             base.Update(gameTime);
             if (player.GetCurrentSpell().HasValue)
             {
-                string name = player.GetCurrentSpell().Value.Name.Value;
+                string name = $"{player.SelectedSlot + 1}. {player.GetCurrentSpell().Value.Name.Value}";
                 if (Cache != name)
                 {
                     SetText(name);
