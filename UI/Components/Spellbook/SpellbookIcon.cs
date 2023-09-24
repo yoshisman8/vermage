@@ -43,7 +43,7 @@ namespace vermage.UI.Components.Spellbook
         {
             base.Draw(spriteBatch);
 
-            if (!Player.HasSpellUnloked(SpellID) && !IsMouseHovering)
+            if (!Player.HasSpellUnloked(SpellID) && !IsMouseHovering && SpellbookUIState.Spell != SpellID)
             {
                 spriteBatch.Draw(Locked.Value, GetDimensions().Position(), Color.White);
             }

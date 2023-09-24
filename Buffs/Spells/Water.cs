@@ -3,17 +3,18 @@ using vermage.Projectiles.Spells;
 
 namespace vermage.Buffs.Spells
 {
-    public class Fire : BaseSpell
+    public class Water : BaseSpell
     {
         public override void ConfigureSpell()
         {
             CastingTime = 1.45f;
-            Damage = new(1.65f, 1f);
+            Color = Systems.ManaColor.White;
+            Damage = new(1f, 1f);
+            Knockback = new(0.35f, 1f);
             ManaCost = 27;
-            Knockback = new(0.75f, 1f);
             Velocity = new(8f);
-            Color = Systems.ManaColor.Black;
-            ProjectileType = ModContent.ProjectileType<FireProjectile>();
+            Tier = 1;
+            ProjectileType = ModContent.ProjectileType<WaterProjectile>();
         }
     }
 }

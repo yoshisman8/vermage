@@ -3,18 +3,18 @@ using vermage.Projectiles.Spells;
 
 namespace vermage.Buffs.Spells
 {
-    public class Jolt : BaseSpell
+    public class Stone : BaseSpell
     {
         public override void ConfigureSpell()
         {
-            CastingTime = 1.45f;
-            Color = Systems.ManaColor.Red;
+            CastingTime = 1.85f;
+            Color = Systems.ManaColor.White;
             Damage = new(1.45f, 1f);
-            Knockback = new(1f, 1f, 2f);
+            Knockback = new(1.5f, 1f);
             ManaCost = 21;
-            Velocity = new(7f);
+            Velocity = new(6f);
             Tier = 1;
-            ProjectileType = ModContent.ProjectileType<JoltProjectile>();
+            ProjectileType = ModContent.ProjectileType<StoneProjectile>();
         }
     }
 }

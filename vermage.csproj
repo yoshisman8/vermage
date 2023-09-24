@@ -11,7 +11,9 @@
     <None Remove="Assets\UI\MateriaSlotBack.png" />
     <None Remove="Buffs\Spells\Fire.png" />
     <None Remove="Buffs\Spells\Jolt.png" />
+    <None Remove="Projectiles\Spells\AeroProjectile.png" />
     <None Remove="Projectiles\Spells\FireProjectile.png" />
+    <None Remove="Projectiles\Spells\WaterProjectile.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="tModLoader.CodeAssist" Version="0.1.*" />

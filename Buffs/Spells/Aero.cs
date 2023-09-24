@@ -12,13 +12,13 @@ namespace vermage.Buffs.Spells
     {
         public override void ConfigureSpell()
         {
-            CastingTime = 1.30f;
-            Damage = new(1.05f, 1f);
-            ManaCost = 11;
-            Knockback = new(0.8f, 1f);
+            CastingTime = 1.45f;
+            Damage = new(1.25f, 1f);
+            ManaCost = 27;
+            Knockback = new(0f, 1f);
             Velocity = new(10f);
             Color = Systems.ManaColor.White;
-            ProjectileType = ModContent.ProjectileType<FireProjectile>();
+            ProjectileType = ModContent.ProjectileType<AeroProjectile>();
         }
     }
 }

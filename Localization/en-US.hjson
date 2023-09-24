@@ -153,6 +153,34 @@ Mods: {
 				Description: Launches an extremely fast shard of ice.
 				UnlockHint: Perhaps a visit to a frigid place will give you the inspiration needed to learn this spell.
 			}
+
+			Stone: {
+				UnlockHint: Mods.vermage.Buffs.Stone.UnlockHint
+				DisplayName: Stone
+				Description: Mods.vermage.Buffs.Stone.Description
+			}
+
+			Thunder: {
+				UnlockHint: Mods.vermage.Buffs.Thunder.UnlockHint
+				DisplayName: Thunder
+				Description: Mods.vermage.Buffs.Thunder.Description
+			}
+
+			Water: {
+				UnlockHint: Mods.vermage.Buffs.Water.UnlockHint
+				DisplayName: Water
+				Description: Mods.vermage.Buffs.Water.Description
+			}
+
+			GaleBuff: {
+				DisplayName: Gale Buff
+				Description: Mods.vermage.Buffs.GaleBuff.Description
+			}
+
+			TitanSkinBuff: {
+				DisplayName: Titan Skin Buff
+				Description: Mods.vermage.Buffs.TitanSkinBuff.Description
+			}
 		}
 
 		Items: {
@@ -226,6 +254,10 @@ Mods: {
 			ShadowsEdgeFocusProjectile.DisplayName: Shadows Edge Focus Projectile
 			FireProjectile.DisplayName: Fire Projectile
 			TheStingerFocusProjectile.DisplayName: The Stinger Focus Projectile
+			WaterProjectile.DisplayName: Water Projectile
+			AeroProjectile.DisplayName: Aero Projectile
+			BlizzardProjectile.DisplayName: Blizzard Projectile
+			StoneProjectile.DisplayName: Stone Projectile
 		}
 	}
 }

@@ -16,17 +16,7 @@ namespace vermage.Projectiles.Spells
 {
     public class JoltProjectile : BaseSpellProjectile
     {
-        private float Timer
-        {
-            get
-            {
-                return Projectile.ai[1];
-            }
-            set
-            {
-                Projectile.ai[1] = value;
-            }
-        }
+        public override int Homing => 3;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 70;    //The length of old position to be recorded
@@ -43,31 +33,6 @@ namespace vermage.Projectiles.Spells
             Projectile.ignoreWater = true;          //Does the projectile's speed be influenced by water?
             Projectile.tileCollide = true;          //Can the projectile collide with tiles?
             Projectile.extraUpdates = 1;            //Set to above 0 if you want the projectile to update multiple time in a frame
-        }
-
-        public override void AI()
-        {
-            base.AI();
-            Timer++;
-            if (Timer >= 10 * (1 + Projectile.extraUpdates))
-            {
-                float maxDetectRadius = 400f; // The maximum radius at which a projectile can detect a target
-                float projSpeed = 7f; // The speed at which the projectile moves towards the target
-
-                // Trying to find NPC closest to the projectile
-                NPC closestNPC = VerUtils.FindClosestNPC(Projectile.Center, maxDetectRadius);
-                if (closestNPC == null)
-                {
-                    base.AI();
-                    return;
-                }
-
-                // If found, change the velocity of the projectile and turn it in the direction of the target
-                // Use the SafeNormalize extension method to avoid NaNs returned by Vector2.Normalize when the vector is zero
-                Projectile.velocity = (closestNPC.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * projSpeed;
-                Projectile.rotation = Projectile.velocity.ToRotation();
-                Timer = 0;
-            }
         }
 
         public override bool PreDraw(ref Color lightColor)

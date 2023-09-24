@@ -15,6 +15,7 @@ namespace vermage.Projectiles.Spells
 {
     public class FireProjectile : BaseSpellProjectile
     {
+        public override int Homing => 1;
         public override void SetDefaults()
         {
             base.SetDefaults();

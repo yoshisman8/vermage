@@ -131,6 +131,42 @@ namespace vermage.Systems.Utilities
 
             return closestPlayer.ToArray();
         }
+
+        /// <summary>
+        /// Returns all nearby Players from a given location and within a search distance.
+        /// </summary>
+        /// <param name="Position">Starting point of the search.</param>
+        /// <param name="maxDetectDistance">Distance in Pixels.</param>
+        /// <returns>List of NPCs within the given radius.</returns>
+        public static Player[] FindAllNearbyPlayers(Vector2 Position, float maxDetectDistance)
+        {
+            List<Player> closestPlayer = new();
+
+            // Using squared values in distance checks will let us skip square root calculations, drastically improving this method's speed.
+            float sqrMaxDetectDistance = maxDetectDistance * maxDetectDistance;
+
+            // Loop through all NPCs(max always 200)
+            for (int k = 0; k < Main.maxPlayers; k++)
+            {
+                Player target = Main.player[k];
+
+                // Checks if the player is active and not dead
+                if (target.active && !target.dead)
+                {
+                    // The DistanceSquared function returns a squared distance between 2 points, skipping relatively expensive square root calculations
+                    float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, Position);
+
+                    // Check if it is within the radius
+                    if (sqrDistanceToTarget < sqrMaxDetectDistance)
+                    {
+                        sqrMaxDetectDistance = sqrDistanceToTarget;
+                        closestPlayer.Add(target);
+                    }
+                }
+            }
+
+            return closestPlayer.ToArray();
+        }
         public static bool IsNullOrEmpty(this string value) => string.IsNullOrEmpty(value);
         public static class Easings
         {

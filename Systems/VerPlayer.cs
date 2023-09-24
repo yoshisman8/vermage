@@ -209,6 +209,11 @@ namespace vermage.Systems
         
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
+            if (SpellbookUIState.Shown && Player.controlInv)
+            {
+                SpellbookUIState.Shown = false;
+                SoundEngine.PlaySound(SoundID.MenuClose);
+            }
             if (ToggleSpellbook.JustPressed)
             {
                 if (SpellbookUIState.Shown)
@@ -220,6 +225,7 @@ namespace vermage.Systems
                 {
                     SpellbookUIState.Rebuild();
                     SpellbookUIState.Shown = true;
+                    Main.playerInventory = false;
                     SoundEngine.PlaySound(SoundID.MenuOpen);
                 }
                 SelectedSlot = 0;
@@ -239,6 +245,17 @@ namespace vermage.Systems
 
             if (Main.netMode == NetmodeID.MultiplayerClient) vermage.Instance.ShareCursorData(CursorPosition, Player.whoAmI);
         }
+
+        public int GetHealingPower()
+        {
+            int throium = 0;
+            if (ModLoader.HasMod("ThoriumMod"))
+            {
+                throium = (int)vermage.ThoriumMod.Call("GetHealBonus", Player);
+            }
+            return (int)BuffDuration.ApplyTo(10) + throium;
+        }
+
         public void HandleCasting()
         {
             if (SpellbookUIState.Shown) return;
@@ -384,7 +401,7 @@ namespace vermage.Systems
         {
             int damage = (int)Player.GetTotalDamage<VermilionDamageClass>().ApplyTo(rapier.Item.damage);
             float knockback = Player.GetTotalKnockback<VermilionDamageClass>().ApplyTo(rapier.Item.knockBack);
-            Vector2 direction = Player.DirectionTo(Main.MouseWorld);
+            Vector2 direction = Player.DirectionTo(CursorPosition);
             direction.Normalize();
 
             Projectile.NewProjectileDirect(Player.GetSource_ItemUse(rapier.Item), FocusPosition ?? Player.Center, direction * spell.Velocity, spell.ProjectileType, damage, knockback, Player.whoAmI,(int)spell.Color);
