@@ -56,7 +56,7 @@ namespace vermage.Projectiles.Rapiers
             Projectile.Size = new Vector2(36);
             Projectile.aiStyle = -1;
             Projectile.friendly = true;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.scale = 1f;
             Projectile.DamageType = GetInstance<VermilionDamageClass>();
@@ -236,89 +236,77 @@ namespace vermage.Projectiles.Rapiers
         #endregion
 
         #region SwingAI
-        public virtual void SwingAI()
-        {
-            if (Timer > TotalTime)
-            {
+        public virtual void SwingAI() {
+            if (Timer > TotalTime) {
                 Projectile.Kill();
                 return;
             }
 
-            Vector2 PlayerCenter = Owner.RotatedRelativePoint(Owner.MountedCenter);
-            Vector2 StartingPosition = PlayerCenter + (new Vector2(0, -1) * SizeAverage() * 1f);
-            
-            float progress = VerUtils.Easings.OutExpo(AnimationPercent());
+            Vector2 playerCenter = Owner.RotatedRelativePoint(Owner.MountedCenter);
 
-            float degress = MathHelper.ToRadians(180f * Projectile.direction * progress);
+            // Assuming the pivot should be 20 pixels away and 10 pixels up from player's center. Adjust this accordingly.
+            Vector2 pivot = playerCenter + new Vector2(20 * Owner.direction, -10);
+            Vector2 startingPosition = pivot + (new Vector2(0, -1) * SizeAverage() * 1f);
 
-            Projectile.Center = StartingPosition.RotatedBy(degress, PlayerCenter);
+            float progress = AnimationPercent();
+            float modifiedProgress;
 
+            if (progress < 0.3f)
+                modifiedProgress = VerUtils.Easings.OutExpo(progress / 0.3f);
+            else
+                modifiedProgress = VerUtils.Easings.OutExpo((1f - progress) / (0.7f * 2));
 
-            //Vector2 Direction = PlayerCenter.DirectionTo(StartPosition);
-            //Direction.Normalize();
-
-            //Vector2 NormVel = Projectile.velocity.SafeNormalize(new Vector2(0));
-            //Vector2 PivotCenter = PlayerCenter + (NormVel * Projectile.Size.X * 0.89f) + Direction;
-
-            //Vector2 hand = PivotCenter + (Direction * Projectile.Size.X * 0.25f) * Projectile.direction;
-
-            //Vector2 rotated = hand.RotatedBy(MathHelper.ToRadians(-90f * Projectile.direction) + degress * Projectile.direction, PlayerCenter);
+            float degrees = MathHelper.ToRadians(180f * Projectile.direction * modifiedProgress);
+            Projectile.Center = startingPosition.RotatedBy(degrees, pivot);
 
             DrawOriginOffsetX = 0;
             DrawOriginOffsetY = (int)(-Projectile.Size.Y * 0.5f);
             DrawOffsetX = (int)(-Projectile.Size.X * 0.05f) * Projectile.direction;
 
-
-            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, (Owner.Center -
+            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (Owner.Center -
                 new Vector2(Projectile.Center.X, (Projectile.Center.Y + DrawOriginOffsetY) + 20)
                 ).ToRotation() + MathHelper.PiOver2);
 
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(-75f) + MathHelper.ToRadians(160f * progress) * Projectile.spriteDirection + (Projectile.direction == -1 ? MathHelper.ToRadians(-15f) : 0f);
+            if (progress <= 0.3f)
+                Projectile.rotation = MathHelper.Lerp(MathHelper.ToRadians(0f), MathHelper.ToRadians(70f), progress / 0.3f);
+            else
+                Projectile.rotation = MathHelper.Lerp(MathHelper.ToRadians(70f), MathHelper.ToRadians(0f), (progress - 0.3f) / 0.7f);
+
+            Projectile.spriteDirection = Owner.direction;  // Flip sprite based on player direction
         }
         #endregion
 
         #region ThrustAI
-        public virtual void ThrustAI()
-        {
-            if (Timer > TotalTime)
-            {
+        public virtual void ThrustAI() {
+            if (Timer > TotalTime) {
                 Projectile.Kill();
                 return;
             }
 
-            Vector2 PlayerCenter = Owner.RotatedRelativePoint(Owner.MountedCenter);
-            
+            Vector2 playerCenter = Owner.RotatedRelativePoint(Owner.MountedCenter);
+            float progress = AnimationPercent();
+            float modifiedProgress = VerUtils.Easings.OutExpo((progress - 0.1f) / 0.9f);
 
-            //Vector2 Direction = StartPosition.DirectionTo(MousePosition);
-            //Direction.Normalize();
-
-            //Vector2 PivotCenter = PlayerCenter + (Direction * ThrusProjectileSize() * 0.25f) + Direction;
-            //Vector2 hand = PivotCenter + (Direction * ThrusProjectileSize() * 0.15f);
-
-            
-
-            Projectile.scale = GetThrusScale(AnimationPercent());
-            //Projectile.Size = Projectile.Size + new Vector2(Projectile.scale);
-
+            Projectile.scale = GetThrustScale(progress);
             DrawOriginOffsetY = (int)-((1f - Projectile.scale) * SizeAverage() * 0.13f);
 
-            float progress = VerUtils.Easings.OutExpo(AnimationPercent());
-            Projectile.Center = PlayerCenter + (Projectile.velocity * (Projectile.Size.X * (1f * progress)));
-            Projectile.rotation = (Projectile.velocity.ToRotation() +  MathHelper.ToRadians(45f)) * Projectile.spriteDirection;
+            // Adjusting the initial position and the distance the thrust travels.
+            Vector2 thrustInitialPosition = playerCenter + new Vector2(15 * Owner.direction, 10);
+            Projectile.Center = thrustInitialPosition + (Projectile.velocity * (0.5f * Projectile.Size.X * (1f * modifiedProgress)));
 
-            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, (Owner.Center -
+            Projectile.rotation = (Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f)) * Projectile.spriteDirection;
+
+            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (Owner.Center -
                 new Vector2(Projectile.Center.X, (Projectile.Center.Y + DrawOriginOffsetY) + 20)
                 ).ToRotation() + MathHelper.PiOver2);
 
-            //Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, (Owner.Center -
-            //new Vector2(hand.X, (hand.Y + DrawOriginOffsetY) + 20)).ToRotation() + MathHelper.PiOver2);
-        }
-        private float GetThrusScale(float progress)
-        {
-            return Utils.Clamp(VerUtils.Easings.OutExpo(progress) * 1.25f, 1f, 1.25f);
+            Projectile.spriteDirection = Owner.direction;
         }
         #endregion
 
+        private float GetThrustScale(float progress) {
+            return Utils.Clamp(VerUtils.Easings.OutExpo(progress) * 1.5f, 0.5f, 1.5f);
+        }
         private float AnimationPercent()
         {
             return Utils.Clamp<float>((float)Timer / (float)TotalTime, 0f,1f);
